@@ -43,7 +43,7 @@ public class Board {
 	protected boolean stateOfGame() {
 		return statofhands() && playerout();
 	}
-	
+		
 	private boolean statofhands() {
 		int count = 0;
 		for( Player p : players) {

@@ -33,17 +33,17 @@ public class Main {
 						do {
 							try {
 								switch (getaction(scanner)) {
-								case 1:
+								case 1: 
 									board.getPlayers().get(i).drawCard(board.getDeck().draw());
 									board.getPlayers().get(i).affhand();
 									endturn = true;
 									break;
-								case 2:
+								case 2: // joue une carte
 									board.getPlayers().get(i).affhand();
 									board.cardPlayble(getindex(board.getPlayers().get(i).getHand().size(), scanner), i);
 									endturn = true;
 									break;
-								case 3:
+								case 3: 
 									board.getPlayers().get(i).setHandDown(true);
 									board.getPlayers().get(i).affhand();
 									endturn = true;
