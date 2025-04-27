@@ -43,14 +43,26 @@ public class Player {
 		this.hand = hand;
 	}
 	
+	/**
+	 * Ajoute une carte a la main du joueur
+	 * @param card la carte a ajouter
+	 */
 	public void drawCard(Card card) {
 		this.hand.add(card);
 	}
 
+	/**
+	 * Renvoie la main du joueur
+	 * @return la main du joueur
+	 */
 	public boolean getHandDown() {
 		return handDown;
 	}
 	
+	/**
+	 * Renvoie la valeur de la main du joueur
+	 * @return la valeur de la main du joueur
+	 */
 	public int getHandValue() {
 		int temp = 0;
 		for(int i = 0; i < hand.size(); i++) {
@@ -59,10 +71,20 @@ public class Player {
 		return temp;
 	}
 
+	/**
+	 * Set la main du joueur a une nouvelle main
+	 * @param hand
+	 */
 	public void setHandDown(boolean handDown) {
 		this.handDown = handDown;
 	}
 	
+	/**
+	 * Verifie si la carte est deja dans le tableau
+	 * @param storage
+	 * @param val
+	 * @return true si la carte est deja dans le tableau, false sinon
+	 */
 	private boolean contains(int storage[], int val) {
 		for(int a : storage) {
 			if(val == a) {
@@ -72,6 +94,10 @@ public class Player {
 		return false;
 	}
 	
+	/**
+	 * Compte les points du joueur
+	 * @param hand
+	 */
 	protected void countPoints() {
 		int[] storage = new int[7];
 		int i=0;
@@ -85,6 +111,9 @@ public class Player {
 		}
 	}
 	
+	/**
+	 * Affiche la main du joueur
+	 */
 	public void affhand() {
         System.out.println(name + " a en main : ");
         if (hand.isEmpty()) {
