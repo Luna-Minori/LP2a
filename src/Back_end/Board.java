@@ -60,7 +60,7 @@ public class Board {
 	protected boolean stateOfGame() {
 		return statofhands() && playerout();
 	}
-	
+
 	/*
 	 * Renvoie vrai si toutes les mains sont pleines
 	 * @return vrai si toutes les mains sont pleines, faux sinon
