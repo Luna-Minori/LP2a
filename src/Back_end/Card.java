@@ -21,6 +21,10 @@ public class Card implements Comparator<Card> {
 		return Integer.compare(c1.value, c2.value);
 	}
 	
+	/*
+	 * Renvoie la valeur de la carte
+	 * @return la valeur de la carte en string
+	 */
 	public String toString() {
 		return String.format("La valeur de ta carte est %d ", value);
 	}
