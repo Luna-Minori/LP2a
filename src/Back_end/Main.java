@@ -1,7 +1,6 @@
 package Back_end;
 
 import java.util.Scanner;
-
 public class Main {
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in); // Declare scanner once here
@@ -16,7 +15,7 @@ public class Main {
 		for (int i = 0; i < nb_bot; i++) {
 			board.addPlayer(new Player("Bot" + i, false));
 		}
-
+		
 		// Continue with the game
 		board.new_turn();
 		boolean bool = true;

@@ -5,9 +5,11 @@ import java.util.Comparator;
 public class Card implements Comparator<Card> {
 	
 	private int value;
+	private String imagePath;
 	
 	public Card(int value) {
 		this.value = value;
+		this.imagePath = "C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/" + value + ".png";
 	}
 	
 	public int getValue() {
@@ -26,5 +28,9 @@ public class Card implements Comparator<Card> {
 	public String toString() {
 		return String.format("La valeur de ta carte est %d ", value);
 	}
+	
+    public String getImagePath() {
+        return imagePath;
+    }
 	
 }
