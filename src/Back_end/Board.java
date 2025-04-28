@@ -28,20 +28,10 @@ public class Board {
 		this.bin = c;
 	}
 	
-	/*
-	 * Renvoie le nombre de joueurs
-	 * 
-	 * @return le nombre de joueurs en string
-	 */
 	public String toStringBin() {
 		return String.format("La carte visible est : %d\n", bin.getValue());
 	}
 
-	/*
-	 * Renvoie le nombre de joueurs
-	 * 
-	 * @return le nombre de joueurs
-	 */
 	public void new_turn() {
 		deck = new Deck();
 		for (int i = 0; i < players.size(); i++) {
@@ -50,21 +40,10 @@ public class Board {
 		bin = deck.draw();
 	}
 	
-	/*
-	 * Renvoie vrai si toutes les mains sont pleines et si tous les joueurs sont
-	 * sortis
-	 * 
-	 * @return vrai si toutes les mains sont pleines et si tous les joueurs sont
-	 * sortis, faux sinon
-	 */
 	protected boolean stateOfGame() {
 		return statofhands() && playerout();
 	}
-
-	/*
-	 * Renvoie vrai si toutes les mains sont pleines
-	 * @return vrai si toutes les mains sont pleines, faux sinon
-	 */
+		
 	private boolean statofhands() {
 		int count = 0;
 		for( Player p : players) {
@@ -78,10 +57,6 @@ public class Board {
 		return true;	// true if every hand are not empty
 	}
 	
-	/*
-	 * Renvoie vrai si tous les joueurs sont sortis
-	 * @return vrai si tous les joueurs sont sortis, faux sinon
-	 */
 	private boolean playerout() {
 		int count = 0;
 		for( Player p : players) {
@@ -95,12 +70,6 @@ public class Board {
 		return false; // if all players are out 
 	}
 	
-	/*
-	 * Renvoie la carte jouée par le joueur
-	 * @param index_card l'index de la carte jouée
-	 * @param index_player l'index du joueur
-	 * @throws IllegalArgumentException si la carte jouée n'est pas valable
-	 */
 	protected void cardPlayble(int index_card, int index_player) {
 		Player player = this.getPlayers().get(index_player);
 		if((player.getCard(index_card).getValue() >= bin.getValue()) || (bin.getValue() == 7 && player.getCard(index_card).getValue() == 1)){
@@ -112,9 +81,6 @@ public class Board {
 		}		
 	}
 	
-	/*
-	 * Compte les points de chaque joueur
-	 */
 	protected void countPointsTurn() {
 		for(Player p : players) {
 			p.getHand();
