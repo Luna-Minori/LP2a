@@ -8,13 +8,15 @@ public class BackgroundPanel extends JPanel {
 
     public BackgroundPanel(Image image) {
         this.backgroundImage = image;
-        this.setLayout(null); // Pour placer manuellement des composants par coordonnée
+        this.setLayout(null); // Pour placer manuellement des composants
+        if (backgroundImage != null) {
+            setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
+        }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Redimensionne l'image à la taille actuelle du panel
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
