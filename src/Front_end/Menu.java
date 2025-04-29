@@ -44,7 +44,7 @@ public class Menu extends JFrame {
         quittezButton.addActionListener(e -> System.exit(0));
         jouerButton.addActionListener(e -> {
         	dispose();
-            Front_Board game = new Front_Board();
+        	BoardPanel game = new BoardPanel();
         });
         
         settingsButton.addActionListener(e -> {

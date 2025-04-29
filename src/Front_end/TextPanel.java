@@ -15,8 +15,8 @@ public class TextPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setFont(new Font("Arial", Font.BOLD, 30)); // Définir la police
-        g.setColor(Color.WHITE); // Définir la couleur du texte
+        g.setFont(new Font("Arial", Font.BOLD, 24)); // Définir la police
+        g.setColor(Color.BLACK); // Définir la couleur du texte
         g.drawString(text, 10, 30); // Dessiner le texte à la position (10, 30)
     }
 
