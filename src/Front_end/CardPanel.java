@@ -3,27 +3,24 @@ package Front_end;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
-import javax.swing.Timer;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
     public class CardPanel extends JPanel {
-        private float widthPercent = 0.1f;
-        private float heightPercent = 0.2f;
+        private float widthPercent;
+        private float heightPercent;
         private Image bgImage;
-        private float scale = 0.8f;
+        private float scale = 0.6f;
         private Timer animationTimer;
 
         public CardPanel(float widthPercent, float heightPercent, String lien) {
             this.widthPercent = widthPercent;
             this.heightPercent = heightPercent;
-
             // Charger l'image de la carte
             ImageIcon bgIcon = new ImageIcon(lien);
             this.bgImage = bgIcon.getImage();
             setOpaque(false);
-            setLayout(null);
-
             // Ajouter le MouseListener pour détecter un clic
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -32,6 +29,27 @@ import java.awt.event.MouseEvent;
                     handleCardClick();
                 }
             });
+            
+            MouseAdapter hoverEffect = new MouseAdapter() {
+                private int originalY;
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    CardPanel card = (CardPanel) e.getSource();
+                    originalY = card.getY();
+                    System.out.println("hello");
+                    card.setLocation(card.getX(), originalY - 25); // Soulève la carte
+                    card.repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    CardPanel card = (CardPanel) e.getSource();
+                    card.setLocation(card.getX(), originalY); // Repose la carte
+                    card.repaint();
+                }
+            };
+            this.addMouseListener(hoverEffect);
             startAnimation();
         }
 
@@ -45,11 +63,8 @@ import java.awt.event.MouseEvent;
         public void resizeWithin(Container parent) {
             int parentWidth = parent.getWidth();
             int parentHeight = parent.getHeight();
-
             if (bgImage == null) return;
-
             double aspectRatio = (double) bgImage.getWidth(null) / bgImage.getHeight(null);
-
             int w = (int) (widthPercent * parentWidth);
             int h = (int) (w / aspectRatio);
 
@@ -57,7 +72,6 @@ import java.awt.event.MouseEvent;
                 h = (int) (heightPercent * parentHeight);
                 w = (int) (h * aspectRatio);
             }
-
             setSize(w, h); // PAS setBounds ici !
         }
 

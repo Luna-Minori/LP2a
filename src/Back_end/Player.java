@@ -77,7 +77,7 @@ public class Player {
 		int i=0;
 		for(Card c : hand) {
 			if(!contains(storage, c.getValue())){
-				System.out.println("Storage :" + storage[i] + "Value : " + c.getValue() );
+				System.out.println("Storage :" + storage[i] + "Value : " + c.getValue());
 				addPoint(c.getValue());
 				storage[i] = c.getValue();
 				i++;
