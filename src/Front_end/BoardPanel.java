@@ -3,12 +3,15 @@ package Front_end;
 import javax.swing.*;
 import Back_end.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import Back_end.*;
 
 public class BoardPanel {
 	    private PlayerPanel frontPlayer; // Le panneau représentant la partie du joueur
-
+	    private GameField gamefield;
+	    
 	    public BoardPanel() {
 	        // Définir les propriétés de la fenêtre principale (plateau)
 	    	JFrame frame = new JFrame();
@@ -26,36 +29,39 @@ public class BoardPanel {
 
 	        
 	        // Créer le Front_Player (panneau du joueur)
-	        Board b = new Board();
-	        b.addPlayer(new Player("Luna", true));
-	        b.new_turn();
-	        String PathBinImage =  b.getBin().getImagePath();
-	        PlayerPanel p = new PlayerPanel(b.getPlayers().get(0));
-	        
-	        CardPanel discard = new CardPanel(1 ,1, PathBinImage);
-	        System.out.println(PathBinImage);
-	        discard.setLayout(new FlowLayout(FlowLayout.CENTER, 0 , 0));
-	        discard.setPreferredSize(new Dimension(100, 100));
-	        frame.add(discard);
+	        Board board = new Board();
+	        board.addPlayer(new Player("Luna", true));
+	        board.new_turn();
+	        int BinCardValue =  board.getBin().getValue();
 
-	        // Ajouter le Front_Player au JFrame
-	        frame.add(p, BorderLayout.SOUTH); // Le panneau occupe la partie inférieure (50% de la hauteur)
+        	System.out.println("Working directory: " + System.getProperty("user.dir"));
+        	
+        	
+            //TopPanel topPanel = new TopPanel();
+	        PlayerPanel p = new PlayerPanel(board.getPlayers().get(0));
+	        GameField gf = new GameField(board);
 
-	        // Ajouter un listener pour ajuster le positionnement et la taille dynamiquement
-	        frame.addComponentListener(new java.awt.event.ComponentAdapter() {
-	            public void componentResized(java.awt.event.ComponentEvent e) {
-	                int height = frame.getHeight(); // Hauteur de la fenêtre parent
-	                int width = frame.getWidth(); // Largeur de la fenêtre parent
+            // Ajout des panels
+            //add(topPanel);
+            frame.add(gf);
+            frame.add(p);
 
-	                // Appeler la méthode pour ajuster la taille du Front_Player
-	                p.adjustSize(height, width);
+            // Écouteur de redimensionnement pour adapter dynamiquement les tailles
+            frame.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    int w = frame.getWidth();
+                    int h = frame.getHeight();
 
-	                frame.repaint();
-	            }
-	        });
+                    //topPanel.setBounds(0, 0, w, (int)(h * 0.2));
+                    gf.setBounds(0, (int)(h * 0.2), w, (int)(h * 0.4));
+                    p.setBounds(0, h-p.getHeight()-50, w, (int)(h * 0.4));
 
-	        // Rendre la fenêtre visible
-	        frame.setVisible(true);
-	        frame.repaint();
-	    }
+                    frame.repaint(); // si besoin
+                }
+            });
+
+            frame.setVisible(true);
+        }
 }
+

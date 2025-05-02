@@ -19,7 +19,7 @@ public class PlayerPanel extends JPanel {
         // create Panel for player
         createHandPanel(player);
         TextPanel(player);
-        add(handPanel, BorderLayout.SOUTH);
+        add(handPanel);
         adjustHandPanelSize(); // try to be responsive
     }
 
@@ -29,8 +29,11 @@ public class PlayerPanel extends JPanel {
 
         // Créer une liste de chemins d'images pour les cartes
         ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
-        for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(0.8f, 0.8f, hand.get(i).getImagePath());
+        for (int i = 0; i < hand.size(); ++i) {//this.imagePath = "C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/" +/* value */"1"+ ".png";
+            //URL imageUrl = getClass().getResource("Card_" + hand.get(i).getValue() + ".png");
+        	System.out.println("Working directory: " + System.getProperty("user.dir"));
+            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i).getValue() + ".png", true, true, true);
+            System.out.println("./Front_end/Card_"+hand.get(i).getValue()+".png");
             temp.setLayout(null);
             Card.add(temp);
         }
@@ -54,7 +57,7 @@ public class PlayerPanel extends JPanel {
         Points.setFont(new Font("Arial",Font.PLAIN, 24));
         add(Name);
         add(TextPoints);
-        add(Points);
+        //add(Points);
     }
     
     // Méthode pour ajuster la taille du HandPanel pour qu'il occupe un pourcentage de Front_Player
