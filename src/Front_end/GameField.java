@@ -16,8 +16,7 @@ public class GameField extends JPanel {
     // Constructeur
     public GameField(Board board) {
         setLayout(null);
-        setOpaque(true);
-        setBackground(Color.CYAN);
+        setOpaque(false);
 
         createBinCardPanel(board.getBin().getValue());
         createDrawPanel(board.getDeck());
@@ -41,10 +40,10 @@ public class GameField extends JPanel {
     
     private void createDrawPanel(ArrayList<Card> Deck) {
     	ArrayList<CardPanel> draw = new ArrayList<CardPanel>();
-    	
+    	float cardscale = 0.75f;
     	if(Deck.size() <= 10) {
 	        for (int i = 0; i < Deck.size(); ++i) {
-	        	CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
+	        	CardPanel temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
 	            temp.setLayout(null);
 	            draw.add(temp);
 	        }
@@ -53,10 +52,10 @@ public class GameField extends JPanel {
 	        for (int i = 0; i < Deck.size()/3; ++i) {
 	            CardPanel temp;
 	            if(i == 0) {
-	                temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, true);
+	                temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, true);
 	                System.out.println("une fois");
 	            } else {
-	        	    temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
+	        	    temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
 	            }
 	            temp.setLayout(null);
 	            draw.add(temp);
@@ -88,21 +87,13 @@ public class GameField extends JPanel {
     
     private void Responsive() {
         int panelWidth = (int) (getWidth() * 0.25);
-        int panelHeight = (int) (getHeight() * 0.85);	
 
         // Position de BinCardPanel (à gauche du centre)
         int xBin = (int) ((getWidth() - panelWidth) / 2.5);
-        int y = (int) ((getHeight() - panelHeight) / 5.5);
-        BinCardPanel.setBounds(xBin, y, panelWidth, panelHeight);
-        BinCardPanel.setOpaque(true);
-        BinCardPanel.setBackground(Color.GREEN);
-
+        int y = (int) ((getHeight() - getHeight()) / 5.5);
+        BinCardPanel.setBounds(xBin, y, panelWidth, (int) (getHeight()*0.9));
         // Position de DrawPanel (symétrique à droite)	
         int xDraw = (int) ((getWidth() - panelWidth) / 1.5f);
-        DrawPanel.setBounds(xDraw, y, panelWidth, panelHeight);
-        System.out.println("DrawPanel bounds: " + DrawPanel.getBounds());
-        System.out.println("BinCardPanel bounds: " + BinCardPanel.getBounds());
-
+        DrawPanel.setBounds(xDraw, y, panelWidth, getHeight());
     }
-
 }

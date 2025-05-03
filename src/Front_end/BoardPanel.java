@@ -40,9 +40,9 @@ public class BoardPanel {
             //TopPanel topPanel = new TopPanel();
 	        PlayerPanel p = new PlayerPanel(board.getPlayers().get(0));
 	        GameField gf = new GameField(board);
-
+	        InfoPanel info = new InfoPanel(board);
             // Ajout des panels
-            //add(topPanel);
+            frame.add(info);
             frame.add(gf);
             frame.add(p);
 
@@ -53,9 +53,9 @@ public class BoardPanel {
                     int w = frame.getWidth();
                     int h = frame.getHeight();
 
-                    //topPanel.setBounds(0, 0, w, (int)(h * 0.2));
-                    gf.setBounds(0, (int)(h * 0.2), w, (int)(h * 0.4));
-                    p.setBounds(0, h-p.getHeight()-50, w, (int)(h * 0.4));
+                    info.setBounds(0, 0, w, (int)(h * 0.3));
+                    gf.setBounds(0, (int)(h * 0.3), w, (int)(h * 0.3));
+                    p.setBounds(0, h-p.getHeight(), w, (int)(h * 0.4));
 
                     frame.repaint(); // si besoin
                 }

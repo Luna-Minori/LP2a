@@ -39,7 +39,7 @@ public class PlayerPanel extends JPanel {
         }
 
         // Créer le panneau principal de la main de cartes
-        handPanel = new HandPanel(Card);
+        handPanel = new HandPanel(Card, 80);
     }
 
     private void TextPanel(Player p) {
@@ -76,10 +76,6 @@ public class PlayerPanel extends JPanel {
         adjustHandPanelSize();
     }
 
-    // Méthode pour ajuster la taille du Front_Player (50% de la hauteur de la fenêtre)
-    public void adjustSize(int parentHeight, int parentWidth) {
-        // Ajuster la taille du Front_Player pour qu'il occupe 50% de la hauteur de la fenêtre parent
-        setBounds(0, parentHeight / 2, parentWidth, parentHeight / 2); // Occupation de 50% de la hauteur
-        repaint();
-    }
+
+    
 }

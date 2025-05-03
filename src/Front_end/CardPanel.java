@@ -14,11 +14,13 @@ import java.awt.event.MouseEvent;
         private boolean front;
         private float scale = 0.6f;
         private Timer animationTimer;
+        private boolean handcard;
 
         public CardPanel(float widthPercent, float heightPercent, String lien, boolean front, boolean playanimation, boolean needclicked) {
             this.widthPercent = widthPercent;
             this.heightPercent = heightPercent;
             this.front = front;
+            this.handcard = playanimation;
             // Charger l'image de la carte
             ImageIcon FrontC = new ImageIcon(lien);
             ImageIcon BackC = new ImageIcon("./src/Front_end/Card_Back.png");
@@ -69,49 +71,90 @@ import java.awt.event.MouseEvent;
             // Tu peux ajouter ici la logique pour gérer l'action lors du clic, comme changer l'état du jeu
             // Par exemple, afficher un message, effectuer une action de jeu, etc.
         }
-
+		/*
+		 * Resize CardPanel
+		 */
         public void resizeWithin(Container parent) {
             int parentWidth = parent.getWidth();
             int parentHeight = parent.getHeight();
-            if(front == true && FrontCard != null) {
-	            double aspectRatio = (double) FrontCard.getWidth(null) / FrontCard.getHeight(null);
-	            int w = (int) (widthPercent * parentWidth);
-	            int h = (int) (w / aspectRatio);
-	
-	            if (h > (int) (heightPercent * parentHeight)) {
-	                h = (int) (heightPercent * parentHeight);
-	                w = (int) (h * aspectRatio);
-	            }
-	            setSize(w, h); // PAS setBounds ici !
+            double frontAspectRatio = (double) FrontCard.getWidth(null) / FrontCard.getHeight(null);
+            double backAspectRatio = (double) BackCard.getWidth(null) / BackCard.getHeight(null);
+            if(handcard) {
+                if(front == true && FrontCard != null) {
+    	            int w = (int) (widthPercent * parentWidth);
+    	            int h = (int) (w / frontAspectRatio);
+    	
+    	            if (h > (int) (heightPercent * parentHeight)) {
+    	                h = (int) (heightPercent * parentHeight);
+    	                w = (int) (h * frontAspectRatio);
+    	            }
+    	            setSize(w, h); // PAS setBounds ici !
+                }
+                
+    	        if(front == false && BackCard != null){
+    	            int w = (int) (widthPercent * parentWidth);
+    	            int h = (int) (w / backAspectRatio);
+    	            setSize(w, h); // PAS setBounds ici !
+    	            
+    	            if (h > parentHeight) {
+    	                h = parentHeight;
+    	                w = (int) (h * backAspectRatio);
+    	            }
+    	            setSize(w,h);
+    	        }
             }
-            
-	        if(front == false && BackCard != null){
-	            double aspectRatio = (double) BackCard.getWidth(null) / BackCard.getHeight(null);
-	            int w = (int) (widthPercent * parentWidth);
-	            int h = (int) (w / aspectRatio);
-	            setSize(w, h); // PAS setBounds ici !
-	        }
+            else {
+	            if(front == true && FrontCard != null) {
+	                int w = parentWidth / 6;
+	                int h = (int) (w / frontAspectRatio);
+/*
+	                if (h > parentHeight) {
+	                    h = parentHeight;
+	                    w = (int) (h * frontAspectRatio);
+	                }
+*/
+	                setSize(w, h); // Carte arrière prend toute la taille disponible
+	            }
+	            
+		        if(front == false && BackCard != null){
+    	            int w = (int) (widthPercent * parentWidth);
+    	            int h = (int) (w / backAspectRatio);
+    	            setSize(w, h); // PAS setBounds ici !
+    	            
+    	            if (h > parentHeight) {
+    	                h = parentHeight;
+    	                w = (int) (h * backAspectRatio);
+    	            }
+
+		            setSize(w, h); // Carte arrière prend toute la taille disponible
+		        }
+            }
         }
+        
         private void flip() {
         	front = !front;
         }
     
     @Override
+    /*
+     * Resize the image of CardPanel
+     */
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if(front == true && FrontCard != null) {
 	          	resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
 	            Graphics2D g2d = (Graphics2D) g;
-	            int width = (int) (getWidth() * scale);
-	            int height = (int) (getHeight() * scale);
+	            int width = (int) (getWidth()*0.95);
+	            int height = (int) (getHeight()*0.95);
 	            g2d.drawImage(FrontCard, 0, 0, width, height, this);
         }
+        
     	if(front == false && BackCard != null){
             resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
             Graphics2D g2d = (Graphics2D) g;
-            int width = (int) (getWidth() * scale);
-            int height = (int) (getHeight() * scale);
-            g2d.drawImage(BackCard, 0, 0, width, height, this);
+            int width = (int) (getWidth() * 0.90);
+            int height = (int) (getHeight() * 0.90);
+            g2d.drawImage(BackCard, 15, 0, width, height, this);
     	}
         
     }

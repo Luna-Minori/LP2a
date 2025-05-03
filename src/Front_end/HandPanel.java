@@ -7,10 +7,11 @@ import java.util.ArrayList;
 
 public class HandPanel extends JPanel {
     private ArrayList<CardPanel> cardPanels; // Liste des panneaux de cartes
-    private int spacing = 80; // Espacement entre les cartes
+    private int spacing; // Espacement entre les cartes
 
-    public HandPanel(ArrayList<CardPanel> hand) {
+    public HandPanel(ArrayList<CardPanel> hand, int spacing) {
         this.cardPanels = new ArrayList<>();
+        this.spacing = spacing;
         setLayout(null); // Pour contrôler le placement des cartes
         setOpaque(false); // Transparence du panel
 
