@@ -11,9 +11,9 @@ public class DrawPanel extends JPanel {
     private int spacingX = -1;
     public DrawPanel(ArrayList<CardPanel> deck) {
         this.cardPanels = new ArrayList<>();
-        //etLayout(null);
-        setOpaque(true);
-        setBackground(Color.RED);
+        setLayout(null);
+        setOpaque(false);
+
 
         int[] i = {0};
         Timer timer = new Timer(50, e -> {
@@ -25,6 +25,14 @@ public class DrawPanel extends JPanel {
                 this.add(carte);
                 i[0]++;
                 this.repaint();
+                
+                addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        updateCardPositions();
+                    }
+                });
+
             } else {
                 ((Timer) e.getSource()).stop();
             }
@@ -34,17 +42,19 @@ public class DrawPanel extends JPanel {
     }
     // Calcule une position en éventail ou colonne
     private Rectangle calculateCardPosition(int index) {
-        int cardWidth = (int) (getWidth() * 0.8);
-        int cardHeight = (int) (getHeight() *0.8);
+        int cardWidth = (int) (getWidth());
+        int cardHeight = (int) (getHeight());
         return new Rectangle(spacingX * index, spacingY * index, cardWidth, cardHeight);
     }
-    
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        for (CardPanel panel : cardPanels) {
-            panel.repaint(); // Assurez-vous que chaque carte se redessine correctement
+        
+    private void updateCardPositions() {
+        for (int i = 0; i < cardPanels.size(); i++) {
+            CardPanel card = cardPanels.get(i);
+            Rectangle bounds = calculateCardPosition(i);
+            card.setBounds(bounds);
         }
+        revalidate();
+        repaint();
     }
 
 }
