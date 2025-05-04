@@ -25,4 +25,8 @@ public class TextPanel extends JPanel {
         this.text = newText;
         repaint(); // Redessiner le panneau
     }
+    
+    public String getText() {
+    	return text;
+    }
 }

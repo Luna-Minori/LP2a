@@ -40,7 +40,7 @@ public class Board {
 		bin = deck.draw();
 	}
 	
-	protected boolean stateOfGame() {
+	public boolean stateOfGame() {
 		return statofhands() && playerout();
 	}
 		

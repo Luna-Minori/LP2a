@@ -4,11 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class DrawPanel extends JPanel {
     private ArrayList<CardPanel> cardPanels; // Liste des panneaux de cartes
     private int spacingY = 2; // Espacement entre les cartes
     private int spacingX = -1;
+    private Consumer<CardPanel> onDrawClicked;
+    
     public DrawPanel(ArrayList<CardPanel> deck) {
         this.cardPanels = new ArrayList<>();
         setLayout(null);
@@ -25,6 +28,10 @@ public class DrawPanel extends JPanel {
                 this.add(carte);
                 i[0]++;
                 this.repaint();
+                
+                if(i[0] == 0) {
+                	DrawClicked(carte);
+                }
                 
                 addComponentListener(new ComponentAdapter() {
                     @Override
@@ -56,5 +63,20 @@ public class DrawPanel extends JPanel {
         revalidate();
         repaint();
     }
+    
+    public void DrawClicked(CardPanel firstDrawCard) {
+    	firstDrawCard.setOnCardClicked(card -> {
+            if (onDrawClicked != null) {
+            	onDrawClicked.accept(null); // signal : "je veux piocher"
+            }
+        });
 
+        this.add(firstDrawCard);
+        this.revalidate();
+        this.repaint();
+    }
+    
+    public void setOnCardClick(Consumer<CardPanel> listener) {
+        this.onDrawClicked = listener;
+    }
 }

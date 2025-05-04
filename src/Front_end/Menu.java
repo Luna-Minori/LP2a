@@ -1,27 +1,33 @@
 package Front_end;
 
 import javax.swing.*;
+import java.util.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public class Menu extends JFrame {
-
+public class Menu {
+	private InitGame initGame;
+    private BiConsumer<ArrayList<String>,Integer> initGameEnd;
+	private ArrayList<String> names;
+	private int bot;
+	
     public Menu() {
-        super();
-        setTitle("Menu Principal");
-        setSize(1000, 800);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        JFrame frame = new JFrame("Lama Game");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Menu Principal");
+        frame.setSize(500, 500);
 
         ImageIcon bgIcon = new ImageIcon("C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/Back.png");
         Image bgImage = bgIcon.getImage();
         BackgroundPanel background = new BackgroundPanel(bgImage);
         background.setLayout(null);
         
-        setContentPane(background);
+        frame.setContentPane(background);
 
         JPanel panelMenu = new JPanel();
         panelMenu.setBackground(new Color(0, 0, 0, 200)); // Semi-transparent background
@@ -41,10 +47,18 @@ public class Menu extends JFrame {
         configureButton(quittezButton);
         panelMenu.add(quittezButton);
 
-        quittezButton.addActionListener(e -> System.exit(0));
-        jouerButton.addActionListener(e -> {
-        	dispose();
-        	BoardPanel game = new BoardPanel();
+        quittezButton.addActionListener(e -> System.exit(0));        	
+        jouerButton.addActionListener(a -> {
+            jouerButton.setEnabled(false);
+        	frame.removeAll();
+            frame.dispose();
+            initGame = new InitGame();
+            initGame.setOnValidated((playerNames,nbBots) -> {
+            	if(initGameEnd != null) {
+            		initGameEnd.accept(playerNames, nbBots);
+            		initGameEnd = null;
+            	}
+            });
         });
         
         settingsButton.addActionListener(e -> {
@@ -57,14 +71,14 @@ public class Menu extends JFrame {
         		JButton button = (JButton) e.getSource();
         		button.toString();
         		button.setBackground(new Color(0, 0, 0, 50)); // Slightly transparent on hover
-        		repaint();
+        		frame.repaint();
         	}
         	
         	@Override
         	public void mouseExited(MouseEvent e) {
         		JButton button = (JButton) e.getSource();
         		button.setBackground(new Color(0, 0, 0, 0)); // Restore original semi-transparent background
-        		repaint();
+        		frame.repaint();
         	}
         };
         
@@ -74,13 +88,13 @@ public class Menu extends JFrame {
         
         background.add(panelMenu);
 
-        addComponentListener(new ComponentAdapter() {
+        frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                int x = (int) (getWidth() * 0.1);
-                int y = (int) (getWidth() * 0);
-                int largeur = (int) (getWidth() * 0.3);
-                int hauteur = (int) (getWidth());
+                int x = (int) (frame.getWidth() * 0.1);
+                int y = (int) (frame.getWidth() * 0);
+                int largeur = (int) (frame.getWidth() * 0.3);
+                int hauteur = (int) (frame.getWidth());
 
                 panelMenu.setBounds(x, y, largeur, hauteur);
 
@@ -96,24 +110,22 @@ public class Menu extends JFrame {
             }
         });
 	
-        int x = (int) (getWidth() * 0.1);
-        int y = (int) (getHeight() * 0);
-        int largeur = (int) (getWidth() * 0.3);
-        int hauteur = (int) (getHeight());
+        int x = (int) (frame.getWidth() * 0.1);
+        int y = (int) (frame.getHeight() * 0);
+        int largeur = (int) (frame.getWidth() * 0.3);
+        int hauteur = (int) (frame.getHeight());
 
         panelMenu.setBounds(x, y, largeur, hauteur);
 
         for (Component component : panelMenu.getComponents()) {
-        	System.out.println("aaaa");
             if (component instanceof JButton) {
                 component.setFont(new Font("Arial", Font.PLAIN, (int) (hauteur * 0.05)));
                 component.setPreferredSize(new Dimension(largeur, (int) (hauteur * 0.2)));
             }
         }
-
         panelMenu.revalidate();
         panelMenu.repaint();
-        setVisible(true);
+        frame.setVisible(true);
     }
 
     private void configureButton(JButton button) {
@@ -125,4 +137,9 @@ public class Menu extends JFrame {
         button.setBorderPainted(false);
         button.setFocusPainted(false);
     }
+
+    public void initGameReady(BiConsumer<ArrayList<String>,Integer>callback) {
+        this.initGameEnd = callback;
+    }
+
 }
