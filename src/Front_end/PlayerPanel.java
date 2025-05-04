@@ -2,62 +2,59 @@ package Front_end;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import Back_end.*;
 
 
 public class PlayerPanel extends JPanel {
     private HandPanel handPanel; // Le panneau contenant les cartes du joueur
-    private TextPanel textPanel; // Le panneau de texte (par exemple pour afficher les tours restants)
-
+    private TextPanel namePanel;
+    private TextPanel pointTextPanel;
+    private TextPanel pointPanel;// Le panneau de texte (par exemple pour afficher les tours restants)
+    private ArrayList<Integer> hand;
+    private String name;
+    private int Point;
     // Constructeur
-    public PlayerPanel(Player player) {
+    public PlayerPanel(ArrayList<Integer> hand, String name) {
         setLayout(null);
         setOpaque(false);
         // create Panel for player
-        createHandPanel(player);
-        TextPanel(player);
+        this.hand = hand;
+        this.name = name;
+        createHandPanel();
+        TextPanel();
         add(handPanel);
         adjustHandPanelSize(); // try to be responsive
     }
 
-    private void createHandPanel(Player p) {
-        // Créer la liste des chemins d'images des cartes du joueur
-        ArrayList<Card> hand = p.getHand();
-
+    private void createHandPanel() {
         // Créer une liste de chemins d'images pour les cartes
         ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
-        for (int i = 0; i < hand.size(); ++i) {//this.imagePath = "C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/" +/* value */"1"+ ".png";
-            //URL imageUrl = getClass().getResource("Card_" + hand.get(i).getValue() + ".png");
-        	System.out.println("Working directory: " + System.getProperty("user.dir"));
-            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i).getValue() + ".png", true, true, true);
-            System.out.println("./Front_end/Card_"+hand.get(i).getValue()+".png");
+        for (int i = 0; i < hand.size(); ++i) {
+            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i) + ".png", true, true, true);
             temp.setLayout(null);
             Card.add(temp);
         }
 
         // Créer le panneau principal de la main de cartes
-        handPanel = new HandPanel(Card, 80);
+        handPanel = new HandPanel(Card, true);
     }
 
-    private void TextPanel(Player p) {
+    private void TextPanel() {
         // Exemple de TextPanel pour afficher le nombre de tours restants
-        TextPanel Name = new TextPanel(p.getName());
-        Name.setBounds(100, 50, 300, 50); // Positionner le TextPanel
-        Name.setFont(new Font("Arial", Font.PLAIN, 34));
+    	namePanel = new TextPanel(name);
+    	namePanel.setBounds(100, 50, 300, 50); // Positionner le TextPanel
+    	namePanel.setFont(new Font("Arial", Font.PLAIN, 34));
         System.out.println("w "+ getWidth());
-        TextPanel TextPoints = new TextPanel("Hand Points :");
-        TextPoints.setBounds(10, 270, 220, 50);
-        TextPoints.setFont(new Font("Arial",Font.PLAIN, 24));
+        pointTextPanel = new TextPanel("Hand Points :");
+        pointTextPanel.setBounds(10, 270, 220, 50);
+        pointTextPanel.setFont(new Font("Arial",Font.PLAIN, 24));
         //Point.setColor(Color.black);
-        TextPanel Points = new TextPanel("" + p.getPoint());
-        Points.setBounds(85, 310, 50, 50);
-        Points.setFont(new Font("Arial",Font.PLAIN, 24));
-        add(Name);
-        add(TextPoints);
-        //add(Points);
+        pointPanel = new TextPanel("" + Point );
+        pointPanel.setBounds(85, 310, 50, 50);
+        pointPanel.setFont(new Font("Arial",Font.PLAIN, 24));
+        add(namePanel);
+        add(pointTextPanel);
+        add(pointPanel);
     }
     
     // Méthode pour ajuster la taille du HandPanel pour qu'il occupe un pourcentage de Front_Player
@@ -76,6 +73,30 @@ public class PlayerPanel extends JPanel {
         adjustHandPanelSize();
     }
 
-
+    protected void update(ArrayList<Integer> hand, String name){
+    	this.name = name;
+    	this.hand = hand;
+    	updateHandPanel();
+    	
+    	updateTextPanel();
+    	adjustHandPanelSize(); 
+    }
+    
+    private void updateHandPanel() {
+        ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
+        for (int i = 0; i < hand.size(); ++i) {
+            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i) + ".png", true, true, true);
+            temp.setLayout(null);
+            Card.add(temp);
+        }
+        hand.update(Card);
+    }
+    
+    private void updateTextPanel() {
+        // Exemple de TextPanel pour afficher le nombre de tours restants
+        namePanel.setText(name);
+        pointTextPanel.setText(name);
+        pointPanel.setText(name);
+    }
     
 }

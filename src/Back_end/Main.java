@@ -1,4 +1,4 @@
-package Back_end;
+/*package Back_end;
 
 import java.util.Scanner;
 public class Main {
@@ -134,3 +134,4 @@ public class Main {
 		return number - 1;
 	}
 }
+*/

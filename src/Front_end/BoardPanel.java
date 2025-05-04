@@ -1,18 +1,20 @@
 package Front_end;
 
 import javax.swing.*;
-import Back_end.*;
+import java.util.function.Consumer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import Back_end.*;
 
 public class BoardPanel {
 	    private PlayerPanel frontPlayer; // Le panneau représentant la partie du joueur
 	    private GameField gamefield;
+	    private Consumer<JPanel> onDrawClicked;
+	    private Consumer<JPanel> onCardClicked;
+	    private Consumer<JPanel> onHandDownClicked;
 	    
-	    public BoardPanel() {
+	    public BoardPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int bin, ArrayList<Integer> Deck, int indexMainPlayer) {
 	        // Définir les propriétés de la fenêtre principale (plateau)
 	    	JFrame frame = new JFrame();
 	        frame.setTitle("Lama Game - Plateau");
@@ -27,24 +29,21 @@ public class BoardPanel {
 	        
 	        frame.setContentPane(background);
 
-	        
-	        // Créer le Front_Player (panneau du joueur)
-	        Board board = new Board();
-	        board.addPlayer(new Player("Luna", true));
-	        board.new_turn();
-	        int BinCardValue =  board.getBin().getValue();
 
-        	System.out.println("Working directory: " + System.getProperty("user.dir"));
-        	
-        	
-            //TopPanel topPanel = new TopPanel();
-	        PlayerPanel p = new PlayerPanel(board.getPlayers().get(0));
-	        GameField gf = new GameField(board);
-	        InfoPanel info = new InfoPanel(board);
+	        frontPlayer = new PlayerPanel(hands.get(indexMainPlayer), names.get(indexMainPlayer));
+	        InfoPanel info = new InfoPanel(hands, names, indexMainPlayer);
+	        gamefield = new GameField(bin, Deck);
+	        
+	        gamefield.setOnCardClick(panel -> {
+	            if (onDrawClicked != null) {
+	                onDrawClicked.accept(panel);
+	            }
+	        });
+	        
             // Ajout des panels
             frame.add(info);
-            frame.add(gf);
-            frame.add(p);
+            frame.add(gamefield);
+            frame.add(frontPlayer);
 
             // Écouteur de redimensionnement pour adapter dynamiquement les tailles
             frame.addComponentListener(new ComponentAdapter() {
@@ -54,8 +53,8 @@ public class BoardPanel {
                     int h = frame.getHeight();
 
                     info.setBounds(0, 0, w, (int)(h * 0.3));
-                    gf.setBounds(0, (int)(h * 0.3), w, (int)(h * 0.3));
-                    p.setBounds(0, h-p.getHeight(), w, (int)(h * 0.4));
+                    gamefield.setBounds(0, (int)(h * 0.3), w, (int)(h * 0.3));
+                    frontPlayer.setBounds(0, h-frontPlayer.getHeight(), w, (int)(h * 0.4));
 
                     frame.repaint(); // si besoin
                 }
@@ -63,5 +62,19 @@ public class BoardPanel {
 
             frame.setVisible(true);
         }
+	    
+	    public void setOnDrawRequested(Consumer<JPanel> listener) {
+	        this.onDrawClicked = listener;
+	    }
+	    
+	    public void update(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int bin, ArrayList<Integer> Deck, int indexMainPlayer) {
+	        updateFrontPlayer(hands.get(indexMainPlayer), names.get(indexMainPlayer));
+	        //InfoPanel info = new InfoPanel(hands, names, indexMainPlayer);
+	        //gamefield = new GameField(bin, Deck);
+	    }
+	    
+	    private void updateFrontPlayer(ArrayList<Integer> hand, String name) {
+	    	frontPlayer.update(hand, name);
+	    }
 }
 

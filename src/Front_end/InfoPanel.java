@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import Back_end.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -14,45 +13,39 @@ public class InfoPanel extends JPanel {
 	    private TextPanel textPanel;
 
 	    // Constructeur
-	    public InfoPanel(Board board) {
+	    public InfoPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int MainPlayer) {
 	        setLayout(null);
-	        setOpaque(true);
-	        setBackground(Color.RED);
+	        setOpaque(false);
 	        infoPlayer = new ArrayList<>();
-
-
-	        for(int i = 0; i < board.getPlayers().size(); i++) {
-	        	System.out.println(board.getPlayers().get(i).getName());
-	        	infoPlayer.add(new InfoPlayer(board.getPlayers().get(i)));
-	        	add(infoPlayer.get(i));
+	        int j = 0;
+	        for (int i = 0; i < hands.size(); i++) {
+	        	if(MainPlayer != i) {
+		            infoPlayer.add(new InfoPlayer(hands.get(i), hands.size(), names.get(i)));
+		            add(infoPlayer.get(j));
+		            j++;
+	        	}
+	        	
 	        }
-	    }
-	    
-	    private void adjustHandPanelSize() {
-	        float coefHeightHand = 0.6f; // hand of player use x % of the Panel front player
 
-	        // Ajuster la taille et la position du HandPanel
-	        setBounds(10,10,100,100);
+	        // ✅ Écouteur pour positionner après affichage
+	        addComponentListener(new ComponentAdapter() {
+	            @Override
+	            public void componentResized(ComponentEvent e) {
+	                PositionInfoPlayers(hands.size());
+	            }
+	        });
 	    }
 
 
-	/*
-	    private void TextPanel(Player p) {
-	        // Exemple de TextPanel pour afficher le nombre de tours restants
-	        TextPanel Name = new TextPanel(p.getName());
-	        Name.setBounds(100, 50, 300, 50); // Positionner le TextPanel
-	        Name.setFont(new Font("Arial", Font.PLAIN, 34));
-	        System.out.println("w "+ getWidth());
-	        TextPanel TextPoints = new TextPanel("Hand Points :");
-	        TextPoints.setBounds(10, 270, 220, 50);
-	        TextPoints.setFont(new Font("Arial",Font.PLAIN, 24));
-	        //Point.setColor(Color.black);
-	        TextPanel Points = new TextPanel("" + p.getPoint());
-	        Points.setBounds(85, 310, 50, 50);
-	        Points.setFont(new Font("Arial",Font.PLAIN, 24));
-	        add(Name);
-	        add(TextPoints);
-	        add(Points);
-	    }
-	   */     
+	    private void PositionInfoPlayers(int nbP) {
+	    	int nbPlayer = nbP;
+	    	int marge = 50;
+	    	int w = (getWidth()-marge) / nbPlayer ;
+	    	int h = (int) (getHeight() / 1.5f);
+	    	
+	    	for(int i=0; i < nbPlayer; i++) {
+	    		infoPlayer.get(i).setBounds(w * i +marge/2, 0, w, h);	  
+	    	}
+	    	
+	    }   
 }

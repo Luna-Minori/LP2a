@@ -5,21 +5,22 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import Back_end.*;
+import java.util.function.Consumer;
 
 
 public class GameField extends JPanel {
     private DrawPanel DrawPanel; // Le panneau contenant les cartes du joueur
     private TextPanel textPanel;
     private CardPanel BinCardPanel;// Le panneau de texte (par exemple pour afficher les tours restants)
-
+    private Consumer<DrawPanel> onDrawClicked;
+    private CardPanel firstDrawCard;
     // Constructeur
-    public GameField(Board board) {
+    public GameField(int bin, ArrayList<Integer> Deck) {
         setLayout(null);
         setOpaque(false);
 
-        createBinCardPanel(board.getBin().getValue());
-        createDrawPanel(board.getDeck());
+        createBinCardPanel(bin);
+        createDrawPanel(Deck);
         add(BinCardPanel);
         add(DrawPanel);
         
@@ -30,20 +31,31 @@ public class GameField extends JPanel {
             	Responsive();
             }
         });
+        
+        DrawPanel.setOnCardClick(card -> {
+            if (onDrawClicked != null) {
+            	onDrawClicked.accept(null); // ou null si JPanel inutile
+            }
+        });
     }
 
     private void createBinCardPanel(int value) {
         System.out.println("Bin pannel");
-        BinCardPanel = new CardPanel(1, 1, "./src/Front_end/Card_" + value + ".png", true, false, false);
+        BinCardPanel = new CardPanel(1, 1, "./src/Front_end/Card_" + value + ".png",  true, false, false);
         BinCardPanel.setLayout(null);
     }
     
-    private void createDrawPanel(ArrayList<Card> Deck) {
+    private void createDrawPanel(ArrayList<Integer> Deck) {
     	ArrayList<CardPanel> draw = new ArrayList<CardPanel>();
     	float cardscale = 0.75f;
     	if(Deck.size() <= 10) {
 	        for (int i = 0; i < Deck.size(); ++i) {
-	        	CardPanel temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
+	            CardPanel temp;
+	            if(i == 0) {
+	                temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i) + ".png", false, false, true);
+	            } else {
+	        	    temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i) + ".png", false, false, false);
+	            }
 	            temp.setLayout(null);
 	            draw.add(temp);
 	        }
@@ -52,10 +64,9 @@ public class GameField extends JPanel {
 	        for (int i = 0; i < Deck.size()/3; ++i) {
 	            CardPanel temp;
 	            if(i == 0) {
-	                temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, true);
-	                System.out.println("une fois");
+	                temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i) + ".png", false, false, true);
 	            } else {
-	        	    temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i).getValue() + ".png", false, false, false);
+	        	    temp = new CardPanel(cardscale, cardscale, "./src/Front_end/Card_" + Deck.get(i) + ".png", false, false, false);
 	            }
 	            temp.setLayout(null);
 	            draw.add(temp);
@@ -95,5 +106,9 @@ public class GameField extends JPanel {
         // Position de DrawPanel (symétrique à droite)	
         int xDraw = (int) ((getWidth() - panelWidth) / 1.5f);
         DrawPanel.setBounds(xDraw, y, panelWidth, getHeight());
+    }
+    
+    public void setOnCardClick(Consumer<DrawPanel> listener) {
+        this.onDrawClicked = listener;
     }
 }

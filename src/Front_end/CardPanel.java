@@ -3,6 +3,7 @@ package Front_end;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
+import java.util.function.Consumer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -12,15 +13,16 @@ import java.awt.event.MouseEvent;
         private Image FrontCard;
         private Image BackCard;
         private boolean front;
-        private float scale = 0.6f;
-        private Timer animationTimer;
+        private Consumer<CardPanel> onCardClicked;
         private boolean handcard;
+        private int totalPlayers; // for responsive
 
-        public CardPanel(float widthPercent, float heightPercent, String lien, boolean front, boolean playanimation, boolean needclicked) {
+        public CardPanel(float widthPercent, float heightPercent, String lien, int totalPlayers, boolean front, boolean playanimation, boolean needclicked) {
             this.widthPercent = widthPercent;
             this.heightPercent = heightPercent;
             this.front = front;
             this.handcard = playanimation;
+            this.totalPlayers = totalPlayers;
             // Charger l'image de la carte
             ImageIcon FrontC = new ImageIcon(lien);
             ImageIcon BackC = new ImageIcon("./src/Front_end/Card_Back.png");
@@ -29,28 +31,32 @@ import java.awt.event.MouseEvent;
             setOpaque(false);
 
             
-            if( playanimation == true) {
-            	startAnimation();
-            	
-                MouseAdapter hoverEffect = new MouseAdapter() {
-                    private int originalY;
-
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        CardPanel card = (CardPanel) e.getSource();
-                        originalY = card.getY();
-                        System.out.println("hello");
-                        card.setLocation(card.getX(), originalY - 25); // Soulève la carte
-                        card.repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        CardPanel card = (CardPanel) e.getSource();
-                        card.setLocation(card.getX(), originalY); // Repose la carte
-                        card.repaint();
-                    }
-                };
+            if( handcard == true) {
+            	int y = 25;
+	                MouseAdapter hoverEffect = new MouseAdapter() {
+	                    private int originalY;
+	
+	                    @Override
+	                    public void mouseEntered(MouseEvent e) {
+	                        CardPanel card = (CardPanel) e.getSource();
+	                        originalY = card.getY();
+	                        System.out.println("hello");
+	                        if(front == true) {
+	                        	card.setLocation(card.getX(), originalY - y); // Soulève la carte
+	                        }
+	                        else {
+	                        	card.setLocation(card.getX(), originalY + y/4);
+	                        }
+	                        card.repaint();
+	                    }
+	
+	                    @Override
+	                    public void mouseExited(MouseEvent e) {
+	                        CardPanel card = (CardPanel) e.getSource();
+	                        card.setLocation(card.getX(), originalY); // Repose la carte
+	                        card.repaint();
+	                    }
+	                };
                 this.addMouseListener(hoverEffect);
             }
             if(needclicked == true) {
@@ -65,16 +71,20 @@ import java.awt.event.MouseEvent;
             
         }
 
+        public CardPanel(float widthPercent, float heightPercent, String lien, boolean front, boolean playanimation, boolean needclicked) {
+           this(widthPercent, heightPercent, lien, 1, front, playanimation, needclicked);
+        }
+        
         private void handleCardClick() {
-            // Action à exécuter lors du clic sur la carte
-            System.out.println("Carte cliquée !");
-            // Tu peux ajouter ici la logique pour gérer l'action lors du clic, comme changer l'état du jeu
-            // Par exemple, afficher un message, effectuer une action de jeu, etc.
+            if (onCardClicked != null) {
+                onCardClicked.accept(this);
+            }
         }
 		/*
 		 * Resize CardPanel
 		 */
         public void resizeWithin(Container parent) {
+        	//System.out.println("Nom du parent : " + parent.getClass().getName());
             int parentWidth = parent.getWidth();
             int parentHeight = parent.getHeight();
             double frontAspectRatio = (double) FrontCard.getWidth(null) / FrontCard.getHeight(null);
@@ -92,27 +102,19 @@ import java.awt.event.MouseEvent;
                 }
                 
     	        if(front == false && BackCard != null){
-    	            int w = (int) (widthPercent * parentWidth);
-    	            int h = (int) (w / backAspectRatio);
-    	            setSize(w, h); // PAS setBounds ici !
-    	            
-    	            if (h > parentHeight) {
-    	                h = parentHeight;
-    	                w = (int) (h * backAspectRatio);
-    	            }
-    	            setSize(w,h);
+    	        	if (parent instanceof HandPanel) {
+    	        	    HandPanel handPanel = (HandPanel) parent;
+    	        	    int h = parentHeight;//handPanel.getCardPanels().size();
+    	                int w = (int) (((parentWidth*(totalPlayers-1))/handPanel.getCardPanels().size())*0.95);
+    	                setSize(w, h); // Carte arrière prend toute la taille disponible
+    	        	}
+	                
     	        }
             }
             else {
 	            if(front == true && FrontCard != null) {
 	                int w = parentWidth / 6;
 	                int h = (int) (w / frontAspectRatio);
-/*
-	                if (h > parentHeight) {
-	                    h = parentHeight;
-	                    w = (int) (h * frontAspectRatio);
-	                }
-*/
 	                setSize(w, h); // Carte arrière prend toute la taille disponible
 	            }
 	            
@@ -133,6 +135,7 @@ import java.awt.event.MouseEvent;
         
         private void flip() {
         	front = !front;
+        	repaint();
         }
     
     @Override
@@ -152,23 +155,21 @@ import java.awt.event.MouseEvent;
     	if(front == false && BackCard != null){
             resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
             Graphics2D g2d = (Graphics2D) g;
-            int width = (int) (getWidth() * 0.90);
-            int height = (int) (getHeight() * 0.90);
-            g2d.drawImage(BackCard, 15, 0, width, height, this);
+            int width = (int) (getWidth());
+            int height = (int) (getHeight());
+            if(handcard) {
+                g2d.drawImage(BackCard, 0, 0, width, height, this);
+            }
+            else {
+            	g2d.drawImage(BackCard, 15, 0, (int) (width*0.9), (int) (height*0.9), this);
+            }
+
     	}
         
     }
-
-
-    private void startAnimation() {
-        animationTimer = new Timer(20, e -> {
-            scale += 0.015f;
-            if (scale >= 1.0f) {
-                scale = 1.0f;
-                animationTimer.stop();
-            }
-            repaint();
-        });
-        animationTimer.start();
+    
+    public void setOnCardClicked(Consumer<CardPanel> listener) {
+        this.onCardClicked = listener;
     }
+    
 }
