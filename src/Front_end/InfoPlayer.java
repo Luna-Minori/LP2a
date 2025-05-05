@@ -34,7 +34,7 @@ public class InfoPlayer extends JPanel {
     private void createHandPanel(ArrayList<Integer> hand, int totalPlayers) {
         ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(1f, 1f, "./src/Front_end/Card_" + hand.get(i) + ".png", totalPlayers, false, true, false);
+            CardPanel temp = new CardPanel(1f, 1f, hand.get(i), totalPlayers, false, true, false);
             temp.setLayout(null);
             Card.add(temp);
         }

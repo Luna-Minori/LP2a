@@ -20,14 +20,12 @@ public class InfoPanel extends JPanel {
 	        int j = 0;
 	        for (int i = 0; i < hands.size(); i++) {
 	        	if(MainPlayer != i) {
-		            infoPlayer.add(new InfoPlayer(hands.get(i), hands.size(), names.get(i)));
-		            add(infoPlayer.get(j));
-		            j++;
-	        	}
-	        	
+					infoPlayer.add(new InfoPlayer(hands.get(i), hands.size(), names.get(i)));
+					add(infoPlayer.get(j));
+					j++;
+				}
 	        }
 
-	        // ✅ Écouteur pour positionner après affichage
 	        addComponentListener(new ComponentAdapter() {
 	            @Override
 	            public void componentResized(ComponentEvent e) {
@@ -36,16 +34,13 @@ public class InfoPanel extends JPanel {
 	        });
 	    }
 
+	private void PositionInfoPlayers(int nbP) {
+		int marge = 50;
+		int w = (getWidth() - marge) / nbP;
+		int h = (int) (getHeight() / 1.5f);
 
-	    private void PositionInfoPlayers(int nbP) {
-	    	int nbPlayer = nbP;
-	    	int marge = 50;
-	    	int w = (getWidth()-marge) / nbPlayer ;
-	    	int h = (int) (getHeight() / 1.5f);
-	    	
-	    	for(int i=0; i < nbPlayer; i++) {
-	    		infoPlayer.get(i).setBounds(w * i +marge/2, 0, w, h);	  
-	    	}
-	    	
-	    }   
+		for (int i = 0; i < infoPlayer.size(); i++) {
+			infoPlayer.get(i).setBounds(w * i + marge / 2, 0, w, h);
+		}
+	}
 }

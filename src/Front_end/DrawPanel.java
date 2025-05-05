@@ -10,13 +10,12 @@ public class DrawPanel extends JPanel {
     private ArrayList<CardPanel> cardPanels; // Liste des panneaux de cartes
     private int spacingY = 2; // Espacement entre les cartes
     private int spacingX = -1;
-    private Consumer<CardPanel> onDrawClicked;
+    private Consumer<Integer> onDrawClicked;
     
     public DrawPanel(ArrayList<CardPanel> deck) {
         this.cardPanels = new ArrayList<>();
         setLayout(null);
         setOpaque(false);
-
 
         int[] i = {0};
         Timer timer = new Timer(50, e -> {
@@ -26,20 +25,23 @@ public class DrawPanel extends JPanel {
                 carte.setBounds(bounds);
                 this.cardPanels.add(carte);
                 this.add(carte);
-                i[0]++;
                 this.repaint();
-                
                 if(i[0] == 0) {
-                	DrawClicked(carte);
+                    carte.setOnCardClicked((v) -> {
+                        if (onDrawClicked != null) {
+                            System.out.println("Draw panel " + v);
+                            onDrawClicked.accept(v);
+                            //onDrawClicked = null;
+                        }
+                    });
                 }
-                
+                i[0]++;
                 addComponentListener(new ComponentAdapter() {
                     @Override
                     public void componentResized(ComponentEvent e) {
                         updateCardPositions();
                     }
                 });
-
             } else {
                 ((Timer) e.getSource()).stop();
             }
@@ -64,19 +66,21 @@ public class DrawPanel extends JPanel {
         repaint();
     }
     
-    public void DrawClicked(CardPanel firstDrawCard) {
-    	firstDrawCard.setOnCardClicked(card -> {
-            if (onDrawClicked != null) {
-            	onDrawClicked.accept(null); // signal : "je veux piocher"
-            }
-        });
-
-        this.add(firstDrawCard);
-        this.revalidate();
-        this.repaint();
-    }
-    
-    public void setOnCardClick(Consumer<CardPanel> listener) {
+    public void drawClick(Consumer<Integer> listener) {
         this.onDrawClicked = listener;
+    }
+
+    protected void update() {
+        if (!cardPanels.isEmpty()) {  // Vérifie si la liste n'est pas vide
+            cardPanels.removeFirst();
+            if (!cardPanels.isEmpty()) {  // Vérifie à nouveau si la liste n'est pas vide après suppression
+                cardPanels.getFirst().setOnCardClicked((v) -> {
+                    if (onDrawClicked != null) {
+                        System.out.println("Draw panel " + v);
+                        onDrawClicked.accept(v);
+                    }
+                });
+            }
+        }
     }
 }

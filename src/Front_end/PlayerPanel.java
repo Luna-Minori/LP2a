@@ -3,6 +3,7 @@ package Front_end;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 
 public class PlayerPanel extends JPanel {
@@ -12,6 +13,7 @@ public class PlayerPanel extends JPanel {
     private TextPanel pointPanel;// Le panneau de texte (par exemple pour afficher les tours restants)
     private ArrayList<Integer> hand;
     private String name;
+    private Consumer<Integer> CardClick;
     private int Point;
     // Constructeur
     public PlayerPanel(ArrayList<Integer> hand, String name) {
@@ -24,13 +26,22 @@ public class PlayerPanel extends JPanel {
         TextPanel();
         add(handPanel);
         adjustHandPanelSize(); // try to be responsive
+
     }
 
     private void createHandPanel() {
         // Créer une liste de chemins d'images pour les cartes
         ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i) + ".png", true, true, true);
+            CardPanel temp = new CardPanel(0.8f, 0.8f, hand.get(i), true, true, true);
+            int indexCard = i;
+            temp.setOnCardClicked(value ->{
+                if (CardClick != null) {
+                    System.out.println("Player pannel " + value);
+                    CardClick.accept(indexCard);
+                    //CardClick = null;
+                }
+            });
             temp.setLayout(null);
             Card.add(temp);
         }
@@ -77,19 +88,34 @@ public class PlayerPanel extends JPanel {
     	this.name = name;
     	this.hand = hand;
     	updateHandPanel();
-    	
     	updateTextPanel();
     	adjustHandPanelSize(); 
     }
-    
+
+
+    protected void updateHand(ArrayList<Integer> hand){
+        this.hand = hand;
+        updateHandPanel();
+        adjustHandPanelSize();
+    }
+
     private void updateHandPanel() {
         ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(0.8f, 0.8f, "./src/Front_end/Card_" + hand.get(i) + ".png", true, true, true);
+            CardPanel temp = new CardPanel(0.8f, 0.8f, hand.get(i), true, true, true);
             temp.setLayout(null);
             Card.add(temp);
+            int indexCard = i;
+            temp.setOnCardClicked(value ->{
+                if (CardClick != null) {
+                    System.out.println("Player pannel " + value);
+                    CardClick.accept(indexCard);
+                    //CardClick = null;
+                }
+            });
         }
-        hand.update(Card);
+        handPanel.clear();
+        handPanel.update(Card, true);
     }
     
     private void updateTextPanel() {
@@ -97,6 +123,11 @@ public class PlayerPanel extends JPanel {
         namePanel.setText(name);
         pointTextPanel.setText(name);
         pointPanel.setText(name);
+        repaint();
+    }
+
+    public void playCardClick(Consumer<Integer> listener) {
+        this.CardClick = listener;
     }
     
 }

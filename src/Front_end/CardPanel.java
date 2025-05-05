@@ -1,7 +1,6 @@
 package Front_end;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import javax.swing.*;
 import java.util.function.Consumer;
 import java.awt.event.MouseAdapter;
@@ -13,25 +12,26 @@ import java.awt.event.MouseEvent;
         private Image FrontCard;
         private Image BackCard;
         private boolean front;
-        private Consumer<CardPanel> onCardClicked;
+        private int value;
+        private Consumer<Integer> onCardClicked;
         private boolean handcard;
         private int totalPlayers; // for responsive
 
-        public CardPanel(float widthPercent, float heightPercent, String lien, int totalPlayers, boolean front, boolean playanimation, boolean needclicked) {
+        public CardPanel(float widthPercent, float heightPercent, int value, int totalPlayers, boolean front, boolean playanimation, boolean needclicked) {
             this.widthPercent = widthPercent;
             this.heightPercent = heightPercent;
             this.front = front;
             this.handcard = playanimation;
             this.totalPlayers = totalPlayers;
+            this.value = value;
             // Charger l'image de la carte
-            ImageIcon FrontC = new ImageIcon(lien);
+            ImageIcon FrontC = new ImageIcon("./src/Front_end/Card_" + value + ".png");
             ImageIcon BackC = new ImageIcon("./src/Front_end/Card_Back.png");
             this.FrontCard = FrontC.getImage();
             this.BackCard = BackC.getImage();
             setOpaque(false);
-
             
-            if( handcard == true) {
+            if(handcard) {
             	int y = 25;
 	                MouseAdapter hoverEffect = new MouseAdapter() {
 	                    private int originalY;
@@ -40,8 +40,7 @@ import java.awt.event.MouseEvent;
 	                    public void mouseEntered(MouseEvent e) {
 	                        CardPanel card = (CardPanel) e.getSource();
 	                        originalY = card.getY();
-	                        System.out.println("hello");
-	                        if(front == true) {
+	                        if(front) {
 	                        	card.setLocation(card.getX(), originalY - y); // Soulève la carte
 	                        }
 	                        else {
@@ -59,7 +58,7 @@ import java.awt.event.MouseEvent;
 	                };
                 this.addMouseListener(hoverEffect);
             }
-            if(needclicked == true) {
+            if(needclicked) {
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -71,13 +70,15 @@ import java.awt.event.MouseEvent;
             
         }
 
-        public CardPanel(float widthPercent, float heightPercent, String lien, boolean front, boolean playanimation, boolean needclicked) {
-           this(widthPercent, heightPercent, lien, 1, front, playanimation, needclicked);
+        public CardPanel(float widthPercent, float heightPercent, int value, boolean front, boolean playanimation, boolean needclicked) {
+           this(widthPercent, heightPercent, value, 1, front, playanimation, needclicked);
         }
         
         private void handleCardClick() {
             if (onCardClicked != null) {
-                onCardClicked.accept(this);
+                System.out.println("clique callback CardPanel ");
+                onCardClicked.accept(this.value);
+                //onCardClicked = null;
             }
         }
 		/*
@@ -90,7 +91,7 @@ import java.awt.event.MouseEvent;
             double frontAspectRatio = (double) FrontCard.getWidth(null) / FrontCard.getHeight(null);
             double backAspectRatio = (double) BackCard.getWidth(null) / BackCard.getHeight(null);
             if(handcard) {
-                if(front == true && FrontCard != null) {
+                if(front && FrontCard != null) {
     	            int w = (int) (widthPercent * parentWidth);
     	            int h = (int) (w / frontAspectRatio);
     	
@@ -101,7 +102,7 @@ import java.awt.event.MouseEvent;
     	            setSize(w, h); // PAS setBounds ici !
                 }
                 
-    	        if(front == false && BackCard != null){
+    	        if(!front && BackCard != null){
     	        	if (parent instanceof HandPanel) {
     	        	    HandPanel handPanel = (HandPanel) parent;
     	        	    int h = parentHeight;//handPanel.getCardPanels().size();
@@ -112,13 +113,13 @@ import java.awt.event.MouseEvent;
     	        }
             }
             else {
-	            if(front == true && FrontCard != null) {
+	            if(front && FrontCard != null) {
 	                int w = parentWidth / 6;
 	                int h = (int) (w / frontAspectRatio);
 	                setSize(w, h); // Carte arrière prend toute la taille disponible
 	            }
 	            
-		        if(front == false && BackCard != null){
+		        if(!front && BackCard != null){
     	            int w = (int) (widthPercent * parentWidth);
     	            int h = (int) (w / backAspectRatio);
     	            setSize(w, h); // PAS setBounds ici !
@@ -144,7 +145,7 @@ import java.awt.event.MouseEvent;
      */
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(front == true && FrontCard != null) {
+        if(front && FrontCard != null) {
 	          	resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
 	            Graphics2D g2d = (Graphics2D) g;
 	            int width = (int) (getWidth()*0.95);
@@ -152,7 +153,7 @@ import java.awt.event.MouseEvent;
 	            g2d.drawImage(FrontCard, 0, 0, width, height, this);
         }
         
-    	if(front == false && BackCard != null){
+    	if(!front && BackCard != null){
             resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
             Graphics2D g2d = (Graphics2D) g;
             int width = (int) (getWidth());
@@ -168,8 +169,13 @@ import java.awt.event.MouseEvent;
         
     }
     
-    public void setOnCardClicked(Consumer<CardPanel> listener) {
+    public void setOnCardClicked(Consumer<Integer> listener) {
         this.onCardClicked = listener;
     }
-    
+
+    protected void update(int value, boolean front){
+        ImageIcon FrontC = new ImageIcon("./src/Front_end/Card_" + value + ".png");;
+        this.FrontCard = FrontC.getImage();
+        this.front = front;
+    }
 }

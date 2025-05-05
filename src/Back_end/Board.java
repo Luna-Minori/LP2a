@@ -70,7 +70,7 @@ public class Board {
 		return false; // if all players are out 
 	}
 	
-	protected void cardPlayble(int index_card, int index_player) {
+	public void cardPlayble(int index_card, int index_player) {
 		Player player = this.getPlayers().get(index_player);
 		if((player.getCard(index_card).getValue() >= bin.getValue()) || (bin.getValue() == 7 && player.getCard(index_card).getValue() == 1)){
 			setBin(player.getCard(index_card));
