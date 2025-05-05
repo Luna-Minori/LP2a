@@ -51,8 +51,8 @@ public class DrawPanel extends JPanel {
     }
     // Calcule une position en éventail ou colonne
     private Rectangle calculateCardPosition(int index) {
-        int cardWidth = (int) (getWidth());
-        int cardHeight = (int) (getHeight());
+        int cardWidth = getWidth();
+        int cardHeight = getHeight();
         return new Rectangle(spacingX * index, spacingY * index, cardWidth, cardHeight);
     }
         

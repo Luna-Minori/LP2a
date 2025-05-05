@@ -156,8 +156,8 @@ import java.awt.event.MouseEvent;
     	if(!front && BackCard != null){
             resizeWithin(getParent());  // Assurer que l'image est redimensionnée correctement
             Graphics2D g2d = (Graphics2D) g;
-            int width = (int) (getWidth());
-            int height = (int) (getHeight());
+            int width = getWidth();
+            int height = getHeight();
             if(handcard) {
                 g2d.drawImage(BackCard, 0, 0, width, height, this);
             }
@@ -174,7 +174,7 @@ import java.awt.event.MouseEvent;
     }
 
     protected void update(int value, boolean front){
-        ImageIcon FrontC = new ImageIcon("./src/Front_end/Card_" + value + ".png");;
+        ImageIcon FrontC = new ImageIcon("./src/Front_end/Card_" + value + ".png");
         this.FrontCard = FrontC.getImage();
         this.front = front;
     }

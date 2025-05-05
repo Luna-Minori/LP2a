@@ -57,7 +57,7 @@ public class InfoPlayer extends JPanel {
     }
     
     private void adjustTextPanelSize() {
-        Name.setBounds(0, 0, (int) (Name.getText().length()*20) ,(int) (getHeight()*0.5));
+        Name.setBounds(0, 0, Name.getText().length()*20,(int) (getHeight()*0.5));
     }
     
     // Méthode pour redimensionner le Front_Player et ajuster le HandPanel

@@ -1,8 +1,6 @@
 package Front_end;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -10,7 +8,7 @@ import java.awt.event.ComponentEvent;
 public class InfoPanel extends JPanel {
 	
 	    private ArrayList<InfoPlayer> infoPlayer; // Le panneau contenant les cartes du joueur
-	    private TextPanel textPanel;
+	    //private TextPanel textPanel;
 
 	    // Constructeur
 	    public InfoPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int MainPlayer) {

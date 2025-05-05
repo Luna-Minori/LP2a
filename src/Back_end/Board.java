@@ -51,11 +51,9 @@ public class Board {
 				count += 1;
 			}
 		}
-		if( count != 0 ) { // false if one hand or more are empty
-			return false;
-		}
-		return true;	// true if every hand are not empty
-	}
+        // false if one hand or more are empty
+        return count == 0;// true if every hand are not empty
+    }
 	
 	private boolean playerout() {
 		int count = 0;
@@ -64,11 +62,9 @@ public class Board {
 				count += 1;
 			}
 		}
-		if( count != players.size()) {
-			return true; // if player(s) are in the turn
-		}
-		return false; // if all players are out 
-	}
+        return count != players.size(); // if player(s) are in the turn
+// if all players are out
+    }
 	
 	public void cardPlayble(int index_card, int index_player) {
 		Player player = this.getPlayers().get(index_player);

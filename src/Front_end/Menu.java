@@ -92,9 +92,9 @@ public class Menu {
             @Override
             public void componentResized(ComponentEvent e) {
                 int x = (int) (frame.getWidth() * 0.1);
-                int y = (int) (frame.getWidth() * 0);
+                int y = 0;
                 int largeur = (int) (frame.getWidth() * 0.3);
-                int hauteur = (int) (frame.getWidth());
+                int hauteur = frame.getWidth();
 
                 panelMenu.setBounds(x, y, largeur, hauteur);
 
@@ -111,9 +111,9 @@ public class Menu {
         });
 	
         int x = (int) (frame.getWidth() * 0.1);
-        int y = (int) (frame.getHeight() * 0);
+        int y = 0;
         int largeur = (int) (frame.getWidth() * 0.3);
-        int hauteur = (int) (frame.getHeight());
+        int hauteur = frame.getHeight();
 
         panelMenu.setBounds(x, y, largeur, hauteur);
 

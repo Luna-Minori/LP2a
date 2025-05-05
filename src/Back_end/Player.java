@@ -63,7 +63,7 @@ public class Player {
 		this.handDown = handDown;
 	}
 	
-	private boolean contains(int storage[], int val) {
+	private boolean contains(int[] storage, int val) {
 		for(int a : storage) {
 			if(val == a) {
 				return true;

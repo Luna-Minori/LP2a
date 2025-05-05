@@ -1,7 +1,6 @@
 package Front_end;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -10,11 +9,10 @@ import java.util.function.Consumer;
 
 public class GameField extends JPanel {
     private DrawPanel DrawPanel; // Le panneau contenant les cartes du joueur
-    private TextPanel textPanel;
+    //private TextPanel textPanel;
     private CardPanel BinCardPanel;// Le panneau de texte (par exemple pour afficher les tours restants)
     private Consumer<Integer> onDrawClicked;
     private Consumer<Integer> HandDownClicked;
-    private CardPanel firstDrawCard;
     // Constructeur
     public GameField(int bin, ArrayList<Integer> Deck) {
         setLayout(null);
@@ -48,7 +46,7 @@ public class GameField extends JPanel {
     }
     
     private void createDrawPanel(ArrayList<Integer> Deck) {
-    	ArrayList<CardPanel> draw = new ArrayList<CardPanel>();
+    	ArrayList<CardPanel> draw = new ArrayList<>();
     	float cardscale = 0.75f;
     	if(Deck.size() <= 10) {
 	        for (int i = 0; i < Deck.size(); ++i) {
@@ -116,14 +114,6 @@ public class GameField extends JPanel {
 
     public void HandDownClicked(Consumer<Integer> listener) {
         this.HandDownClicked = listener;
-    }
-
-    protected void update(int bin, ArrayList<Integer> Deck) {
-        remove(BinCardPanel);
-        remove(DrawPanel);
-        createBinCardPanel(bin);
-        createDrawPanel(Deck);
-        repaint();
     }
 
     protected void updateBin(int bin) {
