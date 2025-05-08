@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 public class Player {
 
-	private int point = 0;
+	private int pointRound = 0;
+	private int pointGame = 0;
 	private ArrayList<Card> hand = new ArrayList<>();
 	private String name;
 	private boolean handDown = false;
@@ -18,13 +19,17 @@ public class Player {
 		this.name = name;
 		this.human = hum;
 	}
-	
-	public int getPoint() {
-		return point;
+
+	public int getPointGame() {
+		return pointGame;
+	}
+
+	public int getPointRound() {
+		return pointRound;
 	}
 
 	public void addPoint(int point) {
-		this.point += point;
+		this.pointRound += point;
 	}
 	
 	public String getName() {
@@ -96,4 +101,10 @@ public class Player {
             System.out.println();
         }
 	}
+
+	protected void updatePointGame(){
+		this.pointGame += this.pointRound;
+		this.pointRound = 0;
+	}
+
 }

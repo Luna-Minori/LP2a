@@ -40,8 +40,16 @@ public class Board {
 		bin = deck.draw();
 	}
 	
-	public boolean stateOfGame() {
+	public boolean stateOfRound() {
 		return statofhands() && playerout();
+	}
+	public boolean stateOfGame(){
+		for(Player p : players) {
+			if(p.getPointGame() >= 40){
+				return false;
+			};
+		}
+		return true;
 	}
 		
 	private boolean statofhands() {
@@ -68,7 +76,9 @@ public class Board {
 	
 	public void cardPlayble(int index_card, int index_player) {
 		Player player = this.getPlayers().get(index_player);
-		if((player.getCard(index_card).getValue() >= bin.getValue()) || (bin.getValue() == 7 && player.getCard(index_card).getValue() == 1)){
+		int valueCard = player.getCard(index_card).getValue();
+		int valueBin = this.getBin().getValue();
+		if (valueCard == valueBin || valueCard == valueBin + 1 || valueBin == 7 && valueCard == 1) {
 			setBin(player.getCard(index_card));
 			player.getHand().remove(index_card);
 		}		
@@ -77,11 +87,17 @@ public class Board {
 		}		
 	}
 	
-	protected void countPointsTurn() {
+	public void countPointsTurn() {
 		for(Player p : players) {
-			p.getHand();
 			p.countPoints();
-			System.out.println(p.getName() + " a : " + p.getPoint());
+			System.out.println(p.getName() + " a : " + p.getPointRound());
+		}
+	}
+
+	public void countPointGame(){
+		for(Player p : players) {
+			p.updatePointGame();
+			System.out.println(p.getName() + " a : " + p.getPointRound());
 		}
 	}
 }

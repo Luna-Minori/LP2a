@@ -8,20 +8,21 @@ import java.awt.event.ComponentEvent;
 
 public class InfoPlayer extends JPanel {
 	private TextPanel Name;
+    private TextPanel gamePoints;
 	private HandPanel handPanel;
 	
-	public InfoPlayer(ArrayList<Integer> hand, int totalPlayers, String name) {
+	public InfoPlayer(ArrayList<Integer> hand, int totalPlayers, String name, int point) {
         setLayout(null);
         setOpaque(false);
 
         // create Panel for player
         createHandPanel(hand, totalPlayers);
-        createTextPanel(name);
+        createTextPanel(name, point);
         add(handPanel);
         add(Name);
+        add(gamePoints);
         adjustHandPanelSize(); // try to be responsive
         adjustTextPanelSize();
-        // ✅ Ajouter un listener pour être responsive
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -32,9 +33,9 @@ public class InfoPlayer extends JPanel {
     }
 
     private void createHandPanel(ArrayList<Integer> hand, int totalPlayers) {
-        ArrayList<CardPanel> Card = new ArrayList<CardPanel>();
+        ArrayList<CardPanel> Card = new ArrayList<>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(1f, 1f, hand.get(i), totalPlayers, false, true, false);
+            CardPanel temp = new CardPanel(hand.get(i), totalPlayers, false, true, false, false);
             temp.setLayout(null);
             Card.add(temp);
         }
@@ -42,10 +43,12 @@ public class InfoPlayer extends JPanel {
         handPanel = new HandPanel(Card, false);
     }
     
-    private void createTextPanel(String name) {
+    private void createTextPanel(String name, int point) {
         // Exemple de TextPanel pour afficher le nombre de tours restants
         Name = new TextPanel(name);
         Name.setFont(new Font("Arial", Font.PLAIN, 24));
+        gamePoints = new TextPanel("Game Points : "+point);
+        gamePoints.setFont(new Font("Arial", Font.PLAIN, 6));
     }
     
     // Méthode pour ajuster la taille du HandPanel pour qu'il occupe un pourcentage de Front_Play	er
@@ -58,6 +61,7 @@ public class InfoPlayer extends JPanel {
     
     private void adjustTextPanelSize() {
         Name.setBounds(0, 0, Name.getText().length()*20,(int) (getHeight()*0.5));
+        gamePoints.setBounds(0, (int) (getHeight()*0.5), gamePoints.getText().length()*20,(int) (getHeight()*0.3));
     }
     
     // Méthode pour redimensionner le Front_Player et ajuster le HandPanel
@@ -65,7 +69,27 @@ public class InfoPlayer extends JPanel {
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
         // Réajuster la taille du HandPanel chaque fois que le parent est redimensionné
-        adjustHandPanelSize();
         adjustTextPanelSize();
+        adjustHandPanelSize();
     }
+
+    protected void updateHandPanel(ArrayList<Integer> hand) {
+        ArrayList<CardPanel> Card = new ArrayList<>();
+        for (int i = 0; i < hand.size(); ++i) {
+            CardPanel temp = new CardPanel(hand.get(i), false, true, false);
+            temp.setLayout(null);
+            Card.add(temp);
+        }
+        handPanel.clear();
+        handPanel.update(Card, false);
+    }
+
+    protected void update(ArrayList<Integer> hand, String s, int point) {
+        updateHandPanel(hand);
+        Name.setText(s);
+        gamePoints.setText("Game Points : "+point);
+        adjustTextPanelSize();
+        adjustHandPanelSize();
+    }
+
 }

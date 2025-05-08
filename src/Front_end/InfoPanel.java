@@ -11,14 +11,14 @@ public class InfoPanel extends JPanel {
 	    //private TextPanel textPanel;
 
 	    // Constructeur
-	    public InfoPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int MainPlayer) {
+	    public InfoPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int MainPlayer, ArrayList<Integer> gamePoints) {
 	        setLayout(null);
 	        setOpaque(false);
 	        infoPlayer = new ArrayList<>();
 	        int j = 0;
 	        for (int i = 0; i < hands.size(); i++) {
 	        	if(MainPlayer != i) {
-					infoPlayer.add(new InfoPlayer(hands.get(i), hands.size(), names.get(i)));
+					infoPlayer.add(new InfoPlayer(hands.get(i), hands.size(), names.get(i), gamePoints.get(i)));
 					add(infoPlayer.get(j));
 					j++;
 				}
@@ -41,4 +41,15 @@ public class InfoPanel extends JPanel {
 			infoPlayer.get(i).setBounds(w * i + marge / 2, 0, w, h);
 		}
 	}
+
+    protected void update(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int indexMainPlayer, ArrayList<Integer> gamePoints) {
+		int infoIndex = 0;
+		for (int i = 0; i < hands.size(); i++) {
+			if (i != indexMainPlayer) {
+				infoPlayer.get(infoIndex).update(hands.get(i), names.get(i), gamePoints.get(i));
+				infoIndex++;
+			}
+		}
+		PositionInfoPlayers(hands.size());
+    }
 }

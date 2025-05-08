@@ -3,6 +3,7 @@ package Controler;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.JOptionPane;
+import java.util.Random;
 
 import Back_end.*;
 import Front_end.*;
@@ -13,6 +14,7 @@ public class Controler {
     private static Board board;
     private static BoardPanel pB;
     private static boolean played;
+    private static boolean notfirstRound = false;
 
 
     public static void main(String[] args) {
@@ -39,21 +41,25 @@ public class Controler {
 
         System.out.println("Le jeu peut maintenant continuer.");
         board.new_turn();
-        pB = new BoardPanel(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), 0);
-        nextTurn();
+        pB = new BoardPanel(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), 0, createListHandPoint(board), createOfPoint(board));
+        notfirstRound = false;
+        pB.setOnPauseClicked((value) -> {
+            System.out.println(value);
+        });
+        while (board.stateOfGame()) {
+            nextTurn();
+            board.countPointsTurn();
+            board.countPointGame();
+            board.new_turn();
+            pB.showOverlay();
+            updateFront();
+        }
         //board.countPointsTurn();
         System.out.println("controler finito");
     }
 
-    private static void safelyCountDown(CountDownLatch latch) {
-        if (latch.getCount() > 0) {
-            latch.countDown();
-        }
-    }
-
     private static void nextTurn() {
-        if (!board.stateOfGame()) {
-            System.out.println("Fin du jeu");
+        if (!board.stateOfRound()) {
             return;
         }
         currentPlayer = board.getPlayers().get(currentPlayerIndex);
@@ -62,10 +68,21 @@ public class Controler {
             return;
         }
         if (currentPlayer.getHuman()) {
+            if (notfirstRound) {
+                System.out.println("update ifno panel");
+                pB.updateInfoPanel(createHandsFront(board), createNamesFront(board), currentPlayerIndex, createOfPoint(board));
+            }
+            notfirstRound = true;
             playerTurn();
         } else { // IA
             System.out.println("Tour de l'IA ");
-            iaTurn();
+            int delay = 1000 + new Random().nextInt(4000); // 1 à 5 sec
+            try {
+                Thread.sleep(delay);
+                iaTurn();
+            } catch (InterruptedException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
             System.out.println("fin Tour de l'IA ");
             nextPlayer();
         }
@@ -125,11 +142,12 @@ public class Controler {
         try {
             latch.await(); // Attend la fin de l'une des actions avant de continuer
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
         pB.setOnDrawRequested(null);
         pB.setOnPlayCardRequested(null);
         pB.setOnHandDownRequested(null);
+        pB.updateHandPoint(currentPlayer.getHandValue());
         nextPlayer();
     }
 
@@ -143,8 +161,13 @@ public class Controler {
             }
         }
         if (!cardValue.isEmpty()) {
-            board.cardPlayble(cardIndex.get(bestCard(cardValue)), currentPlayerIndex);
-            pB.updateBin(board.getBin().getValue());
+            try {
+                board.cardPlayble(cardIndex.get(bestCard(cardValue)), currentPlayerIndex);
+                pB.updateBin(board.getBin().getValue());
+            } catch (IllegalArgumentException _) {
+                currentPlayer.drawCard(board.getDeck().draw());
+                pB.updateDraw();
+            }
         } else {
             try {
                 if (currentPlayer.getHandValue() <= 5) {
@@ -160,9 +183,8 @@ public class Controler {
         }
     }
 
-
     private static void updateFront() {
-        pB.update(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), currentPlayerIndex);
+        pB.update(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), currentPlayerIndex, createListHandPoint(board), createOfPoint(board));
     }
 
     private static ArrayList<ArrayList<Integer>> createHandsFront(Board b) {
@@ -176,7 +198,6 @@ public class Controler {
     private static ArrayList<Integer> createHandFront(Player p) {
         ArrayList<Integer> handValues = new ArrayList<>();
         for (Card h : p.getHand()) {
-
             handValues.add(h.getValue());
         }
         return handValues;
@@ -210,4 +231,19 @@ public class Controler {
         return minIndex; // renvoie l'index dans cardValue
     }
 
+    private static ArrayList<Integer> createListHandPoint(Board b) {
+        ArrayList<Integer> points = new ArrayList<>();
+        for (Player p : b.getPlayers()) {
+            points.add(p.getHandValue());
+        }
+        return points;
+    }
+
+    private static ArrayList<Integer> createOfPoint(Board b) {
+        ArrayList<Integer> points = new ArrayList<>();
+        for (Player p : b.getPlayers()) {
+            points.add(p.getPointGame());
+        }
+        return points;
+    }
 }

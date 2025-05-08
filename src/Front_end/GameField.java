@@ -41,20 +41,19 @@ public class GameField extends JPanel {
 
     private void createBinCardPanel(int value) {
         System.out.println("Bin pannel");
-        BinCardPanel = new CardPanel(1, 1, value,  true, false, false);
+        BinCardPanel = new CardPanel(value,  true, false, false);
         BinCardPanel.setLayout(null);
     }
     
     private void createDrawPanel(ArrayList<Integer> Deck) {
     	ArrayList<CardPanel> draw = new ArrayList<>();
-    	float cardscale = 0.75f;
     	if(Deck.size() <= 10) {
 	        for (int i = 0; i < Deck.size(); ++i) {
 	            CardPanel temp;
 	            if(i == 0) {
-	                temp = new CardPanel(cardscale, cardscale, Deck.get(i), false, false, true);
+	                temp = new CardPanel(Deck.get(i), false, false, true);
 	            } else {
-	        	    temp = new CardPanel(cardscale, cardscale, Deck.get(i), false, false, false);
+	        	    temp = new CardPanel(Deck.get(i), false, false, false);
 	            }
 	            temp.setLayout(null);
 	            draw.add(temp);
@@ -64,9 +63,9 @@ public class GameField extends JPanel {
 	        for (int i = 0; i < Deck.size()/3; ++i) {
 	            CardPanel temp;
 	            if(i == 0) {
-	                temp = new CardPanel(cardscale, cardscale, Deck.get(i), false, false, true);
+	                temp = new CardPanel(Deck.get(i), false, false, true);
 	            } else {
-	        	    temp = new CardPanel(cardscale, cardscale, Deck.get(i), false, false, false);
+	        	    temp = new CardPanel(Deck.get(i), false, false, false);
 	            }
 	            temp.setLayout(null);
 	            draw.add(temp);
@@ -118,6 +117,7 @@ public class GameField extends JPanel {
 
     protected void updateBin(int bin) {
         BinCardPanel.update(bin, true);
+        BinCardPanel.startAnimation();
         BinCardPanel.revalidate();
         BinCardPanel.repaint();
     }
