@@ -183,6 +183,5 @@ public class BoardPanel {
         infoPanel.setVisible(false);
         settingsButton.setVisible(false);
     }
-    /}
 }
 
