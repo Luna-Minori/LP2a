@@ -27,14 +27,20 @@ public class Board {
 	public void setBin(Card c) {
 		this.bin = c;
 	}
-	
-	public String toStringBin() {
-		return String.format("La carte visible est : %d\n", bin.getValue());
-	}
 
 	public void new_turn() {
 		deck = new Deck();
 		for (int i = 0; i < players.size(); i++) {
+			players.get(i).setHand(deck.getHand());
+		}
+		bin = deck.draw();
+	}
+
+	public void new_round() {
+		deck = new Deck();
+		for (int i = 0; i < players.size(); i++) {
+			players.get(i).setHandDown(false);
+			players.get(i).setPointRound();
 			players.get(i).setHand(deck.getHand());
 		}
 		bin = deck.draw();

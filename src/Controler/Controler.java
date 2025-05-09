@@ -1,12 +1,14 @@
 package Controler;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.JOptionPane;
 import java.util.Random;
 
 import Back_end.*;
 import Front_end.*;
+import jdk.jshell.EvalException;
 
 public class Controler {
     private static int currentPlayerIndex;
@@ -38,59 +40,60 @@ public class Controler {
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-
         System.out.println("Le jeu peut maintenant continuer.");
-        board.new_turn();
+        board.new_round();
         pB = new BoardPanel(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), 0, createListHandPoint(board), createOfPoint(board));
         notfirstRound = false;
         pB.setOnPauseClicked((value) -> {
             System.out.println(value);
         });
+        //init game
+        currentPlayerIndex = 0;
+        currentPlayer = board.getPlayers().get(currentPlayerIndex);
+        int numberOfTurn = 0;
+
+        // start
         while (board.stateOfGame()) {
-            nextTurn();
+            // Tant que la manche n'est pas terminée
+            while (board.stateOfRound()) {
+                if (!currentPlayer.getHuman()) {
+                    System.out.println("Tour de l'IA ");
+                    int delay = 1000 + new Random().nextInt(3000); // 1 à 4 sec
+                    try {
+                        Thread.sleep(delay);
+                        iaTurn();
+                    } catch (InterruptedException e) {
+                        JOptionPane.showMessageDialog(null, e.getMessage());
+                    }
+                    System.out.println("fin Tour de l'IA ");
+                } else {
+                    if (notfirstRound) {
+                        System.out.println("update ifno panel");
+                        pB.updateInfoPanel(createHandsFront(board), createNamesFront(board), currentPlayerIndex, createOfPoint(board));
+                    }
+                    notfirstRound = true;
+                    playerTurn(); // cette méthode est maintenant bloquante avec CountDownLatch
+                }
+
+                // Avancer au joueur suivant
+                currentPlayerIndex = (currentPlayerIndex + 1) % board.getPlayers().size();
+                currentPlayer = board.getPlayers().get(currentPlayerIndex);
+            }
+
+            // Fin de manche
             board.countPointsTurn();
             board.countPointGame();
-            board.new_turn();
-            pB.showOverlay();
+            board.new_round();
             updateFront();
+
+            pB.overlayUpdate(createNamesFront(board), createOfPoint(board));
+            pB.showOverlay();
+
+            numberOfTurn++;
         }
-        //board.countPointsTurn();
+
+        pB.clear();
         System.out.println("controler finito");
-    }
-
-    private static void nextTurn() {
-        if (!board.stateOfRound()) {
-            return;
-        }
-        currentPlayer = board.getPlayers().get(currentPlayerIndex);
-
-        if (currentPlayer.getHandDown()) {
-            return;
-        }
-        if (currentPlayer.getHuman()) {
-            if (notfirstRound) {
-                System.out.println("update ifno panel");
-                pB.updateInfoPanel(createHandsFront(board), createNamesFront(board), currentPlayerIndex, createOfPoint(board));
-            }
-            notfirstRound = true;
-            playerTurn();
-        } else { // IA
-            System.out.println("Tour de l'IA ");
-            int delay = 1000 + new Random().nextInt(4000); // 1 à 5 sec
-            try {
-                Thread.sleep(delay);
-                iaTurn();
-            } catch (InterruptedException e) {
-                JOptionPane.showMessageDialog(null, e.getMessage());
-            }
-            System.out.println("fin Tour de l'IA ");
-            nextPlayer();
-        }
-    }
-
-    private static void nextPlayer() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % board.getPlayers().size();
-        nextTurn();
     }
 
     private static void playerTurn() {
@@ -148,7 +151,6 @@ public class Controler {
         pB.setOnPlayCardRequested(null);
         pB.setOnHandDownRequested(null);
         pB.updateHandPoint(currentPlayer.getHandValue());
-        nextPlayer();
     }
 
     private static void iaTurn() {
@@ -184,6 +186,10 @@ public class Controler {
     }
 
     private static void updateFront() {
+        if (!currentPlayer.getHuman()) {
+            System.out.println("Erreur : tentative d'affichage de l'interface pour un bot");
+            return; // ou ne rien faire
+        }
         pB.update(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), currentPlayerIndex, createListHandPoint(board), createOfPoint(board));
     }
 

@@ -31,7 +31,7 @@ public class Player {
 	public void addPoint(int point) {
 		this.pointRound += point;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -39,7 +39,7 @@ public class Player {
 	public ArrayList<Card> getHand() {
 		return hand;
 	}
-	
+
 	public Card getCard(int index) {
 		return this.hand.get(index);
 	}
@@ -47,19 +47,28 @@ public class Player {
 	public void setHand(ArrayList<Card> hand) {
 		this.hand = hand;
 	}
-	
+
 	public void drawCard(Card card) {
 		this.hand.add(card);
+	}
+
+	protected void setPointRound(){
+		this.pointRound = 0;
 	}
 
 	public boolean getHandDown() {
 		return handDown;
 	}
-	
+
 	public int getHandValue() {
 		int temp = 0;
 		for(int i = 0; i < hand.size(); i++) {
-			temp += getCard(i).getValue();
+			if(getCard(i).getValue() == 7) {
+				temp += 10;
+			}
+			else{
+				temp += getCard(i).getValue();
+			}
 		}
 		return temp;
 	}
@@ -83,28 +92,20 @@ public class Player {
 		for(Card c : hand) {
 			if(!contains(storage, c.getValue())){
 				System.out.println("Storage :" + storage[i] + "Value : " + c.getValue());
-				addPoint(c.getValue());
+				if(c.getValue() != 7) {
+					addPoint(c.getValue());
+				}
+				else{
+					addPoint(10);
+				}
 				storage[i] = c.getValue();
 				i++;
 			}
 		}
-	}
-	
-	public void affhand() {
-        System.out.println(name + " a en main : ");
-        if (hand.isEmpty()) {
-            System.out.println("aucune carte.");
-        } else {
-            for (Card card : hand) {
-                System.out.println(card.toString() + " ");
-            }
-            System.out.println();
-        }
 	}
 
 	protected void updatePointGame(){
 		this.pointGame += this.pointRound;
 		this.pointRound = 0;
 	}
-
 }

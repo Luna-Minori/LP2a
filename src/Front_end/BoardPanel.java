@@ -1,12 +1,9 @@
 package Front_end;
 
 import javax.swing.*;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.function.Consumer;
-import java.awt.event.MouseAdapter;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
 public class BoardPanel {
@@ -19,6 +16,7 @@ public class BoardPanel {
     private Consumer<Integer> playCardClick;
     private Consumer<Integer> HandDownClicked;
     private Consumer<Integer> inPauseClicked;
+    private Consumer<Integer> onNextRoundClicked;
 
     public BoardPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int bin, ArrayList<Integer> Deck, int indexMainPlayer, ArrayList<Integer> listHandPoint, ArrayList<Integer> gamePoints) {
         // Définir les propriétés de la fenêtre principale (plateau)
@@ -34,18 +32,23 @@ public class BoardPanel {
         background.setLayout(null);
 
         frame.setContentPane(background);
-        overlay = new Overlay(true, frame.getWidth(), frame.getHeight());
+        overlay = new Overlay(true, frame.getWidth(), frame.getHeight(), names, gamePoints);
         overlay.setVisible(false); // initialement caché
         overlay.setLayout(null); // nécessaire pour positionnement absolu
         overlay.setBounds(0, 0, frame.getWidth(), frame.getHeight());
         frame.add(overlay);
 
         overlay.setPauseClicked((value) -> {
-            ;
             if (inPauseClicked != null) {
                 inPauseClicked.accept(value);
             }
         });
+        overlay.setNextRoundClicked((value) -> {
+            if (onNextRoundClicked != null) {
+                onNextRoundClicked.accept(value);
+            }
+        });
+
 
         frontPlayer = new PlayerPanel(hands.get(indexMainPlayer), names.get(indexMainPlayer), listHandPoint.get(indexMainPlayer));
         infoPanel = new InfoPanel(hands, names, indexMainPlayer, gamePoints);
@@ -89,7 +92,7 @@ public class BoardPanel {
                 int h = frame.getHeight();
 
                 infoPanel.setBounds(0, 0, (int) (w * 0.9), (int) (h * 0.3));
-                settingsButton.setBounds((int) (w * 0.95),0, (int) (w * 0.05), (int) (h * 0.3));
+                settingsButton.setBounds((int) (w * 0.95), 0, (int) (w * 0.05), (int) (h * 0.3));
                 gamefield.setBounds(0, (int) (h * 0.3), w, (int) (h * 0.3));
                 frontPlayer.setBounds(0, h - frontPlayer.getHeight(), (int) (w * 0.9), (int) (h * 0.4));
 
@@ -100,7 +103,7 @@ public class BoardPanel {
         frame.setVisible(true);
     }
 
-    private void setSettingButton(){
+    private void setSettingButton() {
         ImageIcon icon = new ImageIcon("./src/Front_end/Setting.png");
         Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         icon = new ImageIcon(img);
@@ -118,6 +121,7 @@ public class BoardPanel {
             }
         });
     }
+
     public void setOnDrawRequested(Consumer<Integer> listener) {
         this.onDrawClicked = listener;
     }
@@ -169,12 +173,16 @@ public class BoardPanel {
         overlay.showOverlay(this);
     }
 
-    public void hideOverlay() {
-        overlay.hideOverlay();
+    public void overlayUpdate(ArrayList<String> names, ArrayList<Integer> score) {
+        overlay.update(names,score);
     }
 
-    protected void setGlassPane(Overlay overlay) {
+    public void clear(){
+        frontPlayer.setVisible(false);
+        gamefield.setVisible(false);
+        infoPanel.setVisible(false);
+        settingsButton.setVisible(false);
     }
-
+    /}
 }
 
