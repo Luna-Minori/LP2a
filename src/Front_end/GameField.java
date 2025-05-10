@@ -6,125 +6,144 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-
 public class GameField extends JPanel {
-    private DrawPanel DrawPanel; // Le panneau contenant les cartes du joueur
-    //private TextPanel textPanel;
-    private CardPanel BinCardPanel;// Le panneau de texte (par exemple pour afficher les tours restants)
-    private Consumer<Integer> onDrawClicked;
-    private Consumer<Integer> HandDownClicked;
-    // Constructeur
-    public GameField(int bin, ArrayList<Integer> Deck) {
+    private DrawPanel drawPanel; // Panel containing the player's cards
+    private CardPanel binCardPanel; // Panel for the card bin (e.g., to show the remaining rounds)
+    private Consumer<Integer> onDrawClicked; // Consumer for handling card draw clicks
+    private Consumer<Integer> handDownClicked; // Consumer for handling "hand down" clicks (if applicable)
+
+    /**
+     * Constructor for the GameField class.
+     * Initializes the panels and handles component resize events.
+     * @param bin Value representing the bin card
+     * @param deck List of card values to be displayed in the draw panel
+     */
+    public GameField(int bin, ArrayList<Integer> deck) {
         setLayout(null);
         setOpaque(false);
 
-        createBinCardPanel(bin);
-        createDrawPanel(Deck);
-        add(BinCardPanel);
-        add(DrawPanel);
-        
-        // Attendre que le GameField soit affiché pour ajuster les tailles
+        createBinCardPanel(bin); // Initialize the bin card panel
+        createDrawPanel(deck); // Initialize the draw panel
+        add(binCardPanel); // Add the bin card panel to the main panel
+        add(drawPanel); // Add the draw panel to the main panel
+
+        // Wait for the GameField to be displayed before adjusting sizes
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-            	Responsive();
+                responsiveLayout(); // Adjust layout when resized
             }
         });
-        
-        DrawPanel.drawClick((value)-> {
+
+        // Set click listener for the draw panel cards
+        drawPanel.drawClicked((value) -> {
             if (onDrawClicked != null) {
-            	onDrawClicked.accept(value); // ou null si JPanel inutile
-                //onDrawClicked = null;
+                onDrawClicked.accept(value); // Trigger the draw click callback
             }
         });
     }
 
+    /**
+     * Creates the Bin Card Panel and sets it up with the specified card value.
+     * @param value The value of the card to be displayed in the bin panel
+     */
     private void createBinCardPanel(int value) {
-        System.out.println("Bin pannel");
-        BinCardPanel = new CardPanel(value,  true, false, false);
-        BinCardPanel.setLayout(null);
-    }
-    
-    private void createDrawPanel(ArrayList<Integer> Deck) {
-    	ArrayList<CardPanel> draw = new ArrayList<>();
-    	if(Deck.size() <= 10) {
-	        for (int i = 0; i < Deck.size(); ++i) {
-	            CardPanel temp;
-	            if(i == 0) {
-	                temp = new CardPanel(Deck.get(i), false, false, true);
-	            } else {
-	        	    temp = new CardPanel(Deck.get(i), false, false, false);
-	            }
-	            temp.setLayout(null);
-	            draw.add(temp);
-	        }
-    	}
-    	else {
-	        for (int i = 0; i < Deck.size()/3; ++i) {
-	            CardPanel temp;
-	            if(i == 0) {
-	                temp = new CardPanel(Deck.get(i), false, false, true);
-	            } else {
-	        	    temp = new CardPanel(Deck.get(i), false, false, false);
-	            }
-	            temp.setLayout(null);
-	            draw.add(temp);
-	        }
-    	}
-        DrawPanel = new DrawPanel(draw);
+        System.out.println("Creating Bin Panel");
+        binCardPanel = new CardPanel(value, true, false, false); // Initialize the bin card panel with appropriate properties
+        binCardPanel.setLayout(null);
     }
 
-
-/*
-    private void TextPanel(Player p) {
-        // Exemple de TextPanel pour afficher le nombre de tours restants
-        TextPanel Name = new TextPanel(p.getName());
-        Name.setBounds(100, 50, 300, 50); // Positionner le TextPanel
-        Name.setFont(new Font("Arial", Font.PLAIN, 34));
-        System.out.println("w "+ getWidth());
-        TextPanel TextPoints = new TextPanel("Hand Points :");
-        TextPoints.setBounds(10, 270, 220, 50);
-        TextPoints.setFont(new Font("Arial",Font.PLAIN, 24));
-        //Point.setColor(Color.black);
-        TextPanel Points = new TextPanel("" + p.getPoint());
-        Points.setBounds(85, 310, 50, 50);
-        Points.setFont(new Font("Arial",Font.PLAIN, 24));
-        add(Name);
-        add(TextPoints);
-        add(Points);
+    /**
+     * Creates the Draw Panel, which will hold all the cards of the player.
+     * Depending on the size of the deck, it will create a different number of cards.
+     * @param deck The list of card values to display in the draw panel
+     */
+    private void createDrawPanel(ArrayList<Integer> deck) {
+        ArrayList<CardPanel> drawCards = new ArrayList<>();
+        if (deck.size() <= 10) {
+            // If the deck size is less than or equal to 10, create a normal set of cards
+            for (int i = 0; i < deck.size(); ++i) {
+                CardPanel temp;
+                if (i == 0) {
+                    temp = new CardPanel(deck.get(i), false, false, true); // First card with animation
+                } else {
+                    temp = new CardPanel(deck.get(i), false, false, false); // Other cards without animation
+                }
+                temp.setLayout(null);
+                drawCards.add(temp); // Add card to the draw panel list
+            }
+        } else {
+            // If the deck size is larger than 10, create cards in batches
+            for (int i = 0; i < deck.size() / 3; ++i) {
+                CardPanel temp;
+                if (i == 0) {
+                    temp = new CardPanel(deck.get(i), false, false, true); // First card with animation
+                } else {
+                    temp = new CardPanel(deck.get(i), false, false, false); // Other cards without animation
+                }
+                temp.setLayout(null);
+                drawCards.add(temp); // Add card to the draw panel list
+            }
+        }
+        drawPanel = new DrawPanel(drawCards); // Initialize the draw panel with the list of card panels
     }
-   */     
-    
-    private void Responsive() {
+
+    /**
+     * Handles the layout and positioning of the panels in response to a resize event.
+     * Adjusts the size and position of the Bin Card Panel and Draw Panel.
+     */
+    private void responsiveLayout() {
         int panelWidth = (int) (getWidth() * 0.25);
 
-        // Position de BinCardPanel (à gauche du centre)
+        // Position of BinCardPanel (to the left of the center)
         int xBin = (int) ((getWidth() - panelWidth) / 2.5);
-        int y = (int) ((getHeight() - getHeight()) / 5.5);
-        BinCardPanel.setBounds(xBin, y, panelWidth, (int) (getHeight()*0.9));
-        // Position de DrawPanel (symétrique à droite)	
+        int y = (int) ((getHeight() - getHeight()) / 5.5); // Position the panels vertically centered
+        binCardPanel.setBounds(xBin, y, panelWidth, (int) (getHeight() * 0.9));
+
+        // Position of DrawPanel (symmetrical to the right of the BinCardPanel)
         int xDraw = (int) ((getWidth() - panelWidth) / 1.5f);
-        DrawPanel.setBounds(xDraw, y, panelWidth, getHeight());
+        drawPanel.setBounds(xDraw, y, panelWidth, getHeight());
     }
-    
-    public void DrawClick(Consumer<Integer> listener) {
+
+    /**
+     * Sets the callback listener for the draw panel card click event.
+     * @param listener The listener to be called when a card is clicked in the draw panel
+     */
+    public void drawClick(Consumer<Integer> listener) {
         this.onDrawClicked = listener;
     }
 
-    public void HandDownClicked(Consumer<Integer> listener) {
-        this.HandDownClicked = listener;
+    /**
+     * Sets the callback listener for the "hand down" click event (if applicable).
+     * @param listener The listener to be called when the "hand down" action occurs
+     */
+    public void handDownClicked(Consumer<Integer> listener) {
+        this.handDownClicked = listener;
     }
 
+    /**
+     * Updates the Bin card with a new value and starts the animation for the BinCardPanel.
+     * @param bin The new value to update the Bin card with
+     */
     protected void updateBin(int bin) {
-        BinCardPanel.update(bin, true);
-        BinCardPanel.startAnimation();
-        BinCardPanel.revalidate();
-        BinCardPanel.repaint();
+        binCardPanel.update(bin, true); // Update the Bin card
+        binCardPanel.startAnimation(); // Start the animation for the Bin card
+        binCardPanel.revalidate(); // Revalidate the component to update its layout
+        binCardPanel.repaint(); // Repaint the component to reflect the changes
     }
 
+    /**
+     * Updates the Draw panel, specifically removing the first card and resetting the click listener.
+     */
     protected void updateDraw() {
-        DrawPanel.update();
-        DrawPanel.revalidate();
-        DrawPanel.repaint();
+        drawPanel.updateDraw(); // Update the Draw panel by removing the first card
+        drawPanel.revalidate(); // Revalidate the component to update its layout
+        drawPanel.repaint(); // Repaint the component to reflect the changes
+    }
+
+    protected void updateDrawPanel(ArrayList<Integer> deck) {
+        drawPanel.update(deck); // Update the Draw panel by removing the first card
+        drawPanel.revalidate(); // Revalidate the component to update its layout
+        drawPanel.repaint(); // Repaint the component to reflect the changes
     }
 }

@@ -2,27 +2,41 @@ package Front_end;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
 
 public class InfoPlayer extends JPanel {
-	private TextPanel Name;
-    private TextPanel gamePoints;
-	private HandPanel handPanel;
-	
-	public InfoPlayer(ArrayList<Integer> hand, int totalPlayers, String name, int point) {
-        setLayout(null);
-        setOpaque(false);
+    private TextPanel nameTextPanel; // Panel to display the player's name
+    private TextPanel gamePointsTextPanel; // Panel to display the player's game points
+    private HandPanel handPanel; // Panel to display the player's hand of cards
 
-        // create Panel for player
+    /**
+     * Constructor for the InfoPlayer class.
+     * Initializes the components that display the player's name, points, and hand.
+     * @param hand List of integers representing the player's hand
+     * @param totalPlayers Total number of players in the game
+     * @param name The player's name
+     * @param point The player's current game points
+     */
+    public InfoPlayer(ArrayList<Integer> hand, int totalPlayers, String name, int point) {
+        setLayout(null); // Allows custom positioning of components
+        setOpaque(false); // Makes the panel transparent
+
+        // Create the hand panel and the text panels
         createHandPanel(hand, totalPlayers);
         createTextPanel(name, point);
+
+        // Add components to the panel
         add(handPanel);
-        add(Name);
-        add(gamePoints);
-        adjustHandPanelSize(); // try to be responsive
+        add(nameTextPanel);
+        add(gamePointsTextPanel);
+
+        // Adjust the sizes of the panels
+        adjustHandPanelSize();
         adjustTextPanelSize();
+
+        // Add component listener to adjust sizes on resize
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -32,64 +46,92 @@ public class InfoPlayer extends JPanel {
         });
     }
 
+    /**
+     * Creates the HandPanel for the player based on their hand of cards.
+     * @param hand The player's hand (list of card values)
+     * @param totalPlayers The total number of players in the game
+     */
     private void createHandPanel(ArrayList<Integer> hand, int totalPlayers) {
-        ArrayList<CardPanel> Card = new ArrayList<>();
+        ArrayList<CardPanel> cards = new ArrayList<>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(hand.get(i), totalPlayers, false, true, false, false);
-            temp.setLayout(null);
-            Card.add(temp);
+            // Create a CardPanel for each card in the hand
+            CardPanel card = new CardPanel(hand.get(i), totalPlayers, false, true, false, false);
+            card.setLayout(null); // Allow custom positioning inside the CardPanel
+            cards.add(card);
         }
-        // Créer le panneau principal de la main de cartes
-        handPanel = new HandPanel(Card, false);
+        // Create the HandPanel using the list of CardPanels
+        handPanel = new HandPanel(cards, false);
     }
-    
-    private void createTextPanel(String name, int point) {
-        // Exemple de TextPanel pour afficher le nombre de tours restants
-        Name = new TextPanel(name);
-        Name.setFont(new Font("Arial", Font.PLAIN, 24));
-        gamePoints = new TextPanel("Game Points : "+point);
-        gamePoints.setFont(new Font("Arial", Font.PLAIN, 6));
-    }
-    
-    // Méthode pour ajuster la taille du HandPanel pour qu'il occupe un pourcentage de Front_Play	er
-    private void adjustHandPanelSize() {
-        float coefHeightHand = 0.9f; // hand of player use x % of the Panel front player
 
-        // Ajuster la taille et la position du HandPanel
-        handPanel.setBounds((int) Math.ceil(Name.getWidth()*1.05), 0, (int) Math.ceil(getWidth()*0.75), (int) Math.ceil(getHeight()*coefHeightHand));
+    /**
+     * Creates the TextPanels for the player's name and game points.
+     * @param name The player's name
+     * @param point The player's current game points
+     */
+    private void createTextPanel(String name, int point) {
+        nameTextPanel = new TextPanel(name);
+        nameTextPanel.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font for the name
+        gamePointsTextPanel = new TextPanel("Game Points : " + point);
+        gamePointsTextPanel.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font for game points
     }
-    
+
+    /**
+     * Adjusts the size and position of the hand panel within the InfoPlayer panel.
+     */
+    private void adjustHandPanelSize() {
+        float handPanelHeightCoefficient = 0.9f; // Hand occupies 90% of the panel height
+
+        // Adjust the bounds of the hand panel
+        handPanel.setBounds((int) Math.ceil(nameTextPanel.getWidth() * 1.05), 0, (int) Math.ceil(getWidth() * 0.75), (int) Math.ceil(getHeight() * handPanelHeightCoefficient));
+    }
+
+    /**
+     * Adjusts the size and position of the text panels (name and game points).
+     */
     private void adjustTextPanelSize() {
-        Name.setBounds(0, 0, Name.getText().length()*20,(int) (getHeight()*0.5));
-        gamePoints.setBounds(0, (int) (getHeight()*0.5), gamePoints.getText().length()*20,(int) (getHeight()*0.3));
+        nameTextPanel.setBounds(0, 0, nameTextPanel.getText().length() * 20, (int) (getHeight() * 0.5));
+        gamePointsTextPanel.setBounds(0, (int) (getHeight() * 0.5), gamePointsTextPanel.getText().length() * 20, (int) (getHeight() * 0.3));
     }
-    
-    // Méthode pour redimensionner le Front_Player et ajuster le HandPanel
+
+    /**
+     * Called when the panel is resized, adjusts the text panel and hand panel sizes accordingly.
+     */
     @Override
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
-        // Réajuster la taille du HandPanel chaque fois que le parent est redimensionné
+        // Adjust the sizes whenever the panel is resized
         adjustTextPanelSize();
         adjustHandPanelSize();
     }
 
+    /**
+     * Updates the player's hand of cards and adjusts the hand panel size.
+     * @param hand The updated list of card values for the player
+     */
     protected void updateHandPanel(ArrayList<Integer> hand) {
-        ArrayList<CardPanel> Card = new ArrayList<>();
+        ArrayList<CardPanel> cards = new ArrayList<>();
         for (int i = 0; i < hand.size(); ++i) {
-            CardPanel temp = new CardPanel(hand.get(i), false, true, false);
-            temp.setLayout(null);
-            Card.add(temp);
+            // Create a CardPanel for each updated card in the hand
+            CardPanel card = new CardPanel(hand.get(i), false, true, false);
+            card.setLayout(null); // Allow custom positioning inside the CardPanel
+            cards.add(card);
         }
+        // Clear and update the hand panel with the new cards
         handPanel.clear();
-        handPanel.update(Card, false);
+        handPanel.update(cards, false);
     }
 
-    protected void update(ArrayList<Integer> hand, String s, int point) {
-        updateHandPanel(hand);
-        Name.setText(s);
-        gamePoints.setText("Game Points : "+point);
-        adjustTextPanelSize();
-        adjustHandPanelSize();
+    /**
+     * Updates the player's information (hand, name, and points).
+     * @param hand The updated list of card values for the player
+     * @param name The updated name of the player
+     * @param point The updated game points of the player
+     */
+    protected void update(ArrayList<Integer> hand, String name, int point) {
+        updateHandPanel(hand); // Update the player's hand
+        nameTextPanel.setText(name); // Update the name
+        gamePointsTextPanel.setText("Game Points : " + point); // Update the game points
+        adjustTextPanelSize(); // Adjust the size of the text panels
+        adjustHandPanelSize(); // Adjust the size of the hand panel
     }
-
 }

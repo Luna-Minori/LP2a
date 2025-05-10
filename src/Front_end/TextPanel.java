@@ -6,27 +6,46 @@ import java.awt.*;
 public class TextPanel extends JPanel {
     private String text;
 
+    /**
+     * Constructor: Initializes the panel with a given text.
+     *
+     * @param text The text to be displayed on the panel.
+     */
     public TextPanel(String text) {
         this.text = text;
-        setOpaque(false); // Le panneau est transparent
+        setOpaque(false); // The panel is transparent
     }
 
-    // Redéfinir paintComponent pour dessiner le texte
+    /**
+     * Override paintComponent to draw the text on the panel.
+     * This method is called automatically when the panel needs to be redrawn.
+     *
+     * @param g The Graphics object used to paint the component.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setFont(getFont()); // Définir la police
-        g.setColor(getForeground()); // Définir la couleur du texte
-        g.drawString(text, 0, getHeight() / 2); // Dessiner le texte à la position (10, 30)
+        g.setFont(getFont()); // Set the font of the text
+        g.setColor(getForeground()); // Set the text color
+        g.drawString(text, 0, getHeight() / 2); // Draw the text at the position (0, height/2)
     }
 
-    // Méthode pour mettre à jour le texte
+    /**
+     * Getter for the current text displayed on the panel.
+     *
+     * @return The current text.
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * Setter to update the text and trigger a repaint of the panel.
+     *
+     * @param newText The new text to be displayed on the panel.
+     */
     public void setText(String newText) {
         this.text = newText;
-        repaint(); // Redessiner le panneau
-    }
-    
-    public String getText() {
-    	return text;
+        repaint(); // Redraw the panel with the new text
     }
 }

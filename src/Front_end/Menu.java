@@ -1,133 +1,151 @@
 package Front_end;
 
 import javax.swing.*;
-import java.util.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
+/**
+ * Menu class representing the main menu of the game.
+ * It allows launching the game, accessing settings, or quitting.
+ */
 public class Menu {
-	private InitGame initGame;
-    private BiConsumer<ArrayList<String>,Integer> initGameEnd;
-	private ArrayList<String> names;
-	private int bot;
-	
+
+    private InitGame initGame;
+    private BiConsumer<ArrayList<String>, Integer> initGameEndCallback;
+
+    /**
+     * Constructor that builds and displays the main menu.
+     */
     public Menu() {
         JFrame frame = new JFrame("Lama Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Menu Principal");
+        frame.setTitle("Main Menu");
         frame.setSize(500, 500);
 
+        // Load background image
         ImageIcon bgIcon = new ImageIcon("C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/Back.png");
         Image bgImage = bgIcon.getImage();
         BackgroundPanel background = new BackgroundPanel(bgImage);
         background.setLayout(null);
-        
         frame.setContentPane(background);
 
-        JPanel panelMenu = new JPanel();
-        panelMenu.setBackground(new Color(0, 0, 0, 200)); // Semi-transparent background
-        panelMenu.setLayout(new FlowLayout(FlowLayout.CENTER, 0, FlowLayout.CENTER));
-        panelMenu.setOpaque(true);
-        panelMenu.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0)); // top, left, bottom, right
+        // Menu panel (semi-transparent)
+        JPanel menuPanel = new JPanel();
+        menuPanel.setBackground(new Color(0, 0, 0, 200));
+        menuPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, FlowLayout.CENTER));
+        menuPanel.setOpaque(true);
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JButton jouerButton = new JButton("Jouer");
-        configureButton(jouerButton);
-        panelMenu.add(jouerButton);
-        
+        // "Play" button
+        JButton playButton = new JButton("Play");
+        configureButton(playButton);
+        menuPanel.add(playButton);
+
+        // "Settings" button
         JButton settingsButton = new JButton("Settings");
         configureButton(settingsButton);
-        panelMenu.add(settingsButton);
+        menuPanel.add(settingsButton);
 
-        JButton quittezButton = new JButton("Quittez");
-        configureButton(quittezButton);
-        panelMenu.add(quittezButton);
+        // "Quit" button
+        JButton quitButton = new JButton("Quit");
+        configureButton(quitButton);
+        menuPanel.add(quitButton);
 
-        quittezButton.addActionListener(e -> System.exit(0));        	
-        jouerButton.addActionListener(a -> {
-            jouerButton.setEnabled(false);
-        	frame.removeAll();
-            frame.dispose();
-            initGame = new InitGame();
-            initGame.setOnValidated((playerNames,nbBots) -> {
-            	if(initGameEnd != null) {
-            		initGameEnd.accept(playerNames, nbBots);
-            		initGameEnd = null;
-            	}
+        // Quit action
+        quitButton.addActionListener(e -> System.exit(0));
+
+        // Play action
+        playButton.addActionListener(a -> {
+            playButton.setEnabled(false);
+            frame.dispose(); // Closes current menu
+            initGame = new InitGame(); // Launches game setup window
+            initGame.setOnValidated((playerNames, nbBots) -> {
+                if (initGameEndCallback != null) {
+                    initGameEndCallback.accept(playerNames, nbBots);
+                    initGameEndCallback = null;
+                }
             });
         });
-        
-        settingsButton.addActionListener(e -> {
-        	Settings settings = new Settings();
-        });
-        
-        MouseAdapter hoverEffect = new MouseAdapter() {
-        	@Override
-        	public void mouseEntered(MouseEvent e) {
-        		JButton button = (JButton) e.getSource();
-        		button.toString();
-        		button.setBackground(new Color(0, 0, 0, 50)); // Slightly transparent on hover
-        		frame.repaint();
-        	}
-        	
-        	@Override
-        	public void mouseExited(MouseEvent e) {
-        		JButton button = (JButton) e.getSource();
-        		button.setBackground(new Color(0, 0, 0, 0)); // Restore original semi-transparent background
-        		frame.repaint();
-        	}
-        };
-        
-        jouerButton.addMouseListener(hoverEffect);
-        settingsButton.addMouseListener(hoverEffect);
-        quittezButton.addMouseListener(hoverEffect);
-        
-        background.add(panelMenu);
 
+        // Settings action
+        settingsButton.addActionListener(e -> {
+            new Settings(); // Opens settings
+        });
+
+        // Hover effect on buttons
+        MouseAdapter hoverEffect = new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JButton button = (JButton) e.getSource();
+                button.setBackground(new Color(0, 0, 0, 50));
+                frame.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JButton button = (JButton) e.getSource();
+                button.setBackground(new Color(0, 0, 0, 0));
+                frame.repaint();
+            }
+        };
+
+        playButton.addMouseListener(hoverEffect);
+        settingsButton.addMouseListener(hoverEffect);
+        quitButton.addMouseListener(hoverEffect);
+
+        background.add(menuPanel);
+
+        // Make the menu responsive to window resize
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 int x = (int) (frame.getWidth() * 0.1);
                 int y = 0;
-                int largeur = (int) (frame.getWidth() * 0.3);
-                int hauteur = frame.getWidth();
+                int width = (int) (frame.getWidth() * 0.3);
+                int height = frame.getHeight();
 
-                panelMenu.setBounds(x, y, largeur, hauteur);
+                menuPanel.setBounds(x, y, width, height);
 
-                for (Component component : panelMenu.getComponents()) {
+                for (Component component : menuPanel.getComponents()) {
                     if (component instanceof JButton) {
-                        component.setFont(new Font("Arial", Font.PLAIN, (int) (hauteur * 0.05)));
-                        component.setPreferredSize(new Dimension(largeur, (int) (hauteur * 0.2)));
+                        component.setFont(new Font("Arial", Font.PLAIN, (int) (height * 0.05)));
+                        component.setPreferredSize(new Dimension(width, (int) (height * 0.2)));
                     }
                 }
 
-                panelMenu.revalidate();
-                panelMenu.repaint();
+                menuPanel.revalidate();
+                menuPanel.repaint();
             }
         });
-	
+
+        // Initial position and size of menu
         int x = (int) (frame.getWidth() * 0.1);
         int y = 0;
-        int largeur = (int) (frame.getWidth() * 0.3);
-        int hauteur = frame.getHeight();
+        int width = (int) (frame.getWidth() * 0.3);
+        int height = frame.getHeight();
 
-        panelMenu.setBounds(x, y, largeur, hauteur);
-
-        for (Component component : panelMenu.getComponents()) {
+        menuPanel.setBounds(x, y, width, height);
+        for (Component component : menuPanel.getComponents()) {
             if (component instanceof JButton) {
-                component.setFont(new Font("Arial", Font.PLAIN, (int) (hauteur * 0.05)));
-                component.setPreferredSize(new Dimension(largeur, (int) (hauteur * 0.2)));
+                component.setFont(new Font("Arial", Font.PLAIN, (int) (height * 0.05)));
+                component.setPreferredSize(new Dimension(width, (int) (height * 0.2)));
             }
         }
-        panelMenu.revalidate();
-        panelMenu.repaint();
+
+        menuPanel.revalidate();
+        menuPanel.repaint();
         frame.setVisible(true);
     }
 
+    /**
+     * Configures a button with standard menu styling.
+     * @param button The button to configure.
+     */
     private void configureButton(JButton button) {
         button.setFont(new Font("Arial", Font.PLAIN, 24));
         button.setForeground(Color.WHITE);
@@ -138,8 +156,11 @@ public class Menu {
         button.setFocusPainted(false);
     }
 
-    public void initGameReady(BiConsumer<ArrayList<String>,Integer>callback) {
-        this.initGameEnd = callback;
+    /**
+     * Sets a callback that will be called once InitGame is finished.
+     * @param callback A BiConsumer that receives player names and bot count.
+     */
+    public void initGameReady(BiConsumer<ArrayList<String>, Integer> callback) {
+        this.initGameEndCallback = callback;
     }
-
 }
