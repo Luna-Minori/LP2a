@@ -36,6 +36,7 @@ public class Overlay extends JPanel {
     public Overlay(boolean showScore, int parentWidth, int parentHeight, ArrayList<String> playerNames, ArrayList<Integer> playerScores) {
         setOpaque(false);
         setBackground(new Color(0, 0, 0, 200));
+        createPauseMenu();
         setBounds(0, 0, parentWidth, parentHeight);
 
         addMouseListener(new MouseAdapter() {});

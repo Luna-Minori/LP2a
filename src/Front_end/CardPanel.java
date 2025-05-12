@@ -104,7 +104,6 @@ public class CardPanel extends JPanel {
      */
     private void handleCardClick() {
         if (onCardClicked != null) {
-            System.out.println("Card clicked callback in CardPanel");
             onCardClicked.accept(this.value);
         }
     }

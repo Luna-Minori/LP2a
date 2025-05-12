@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class BoardPanel {
-    private PlayerPanel frontPlayer = null; // Panel representing the player's part
     private final GameField gamefield;
     private final Overlay overlay;
     private final InfoPanel infoPanel;
+    private JFrame frame;
+    private PlayerPanel frontPlayer = null; // Panel representing the player's part
     private JButton settingsButton;
     private Consumer<Integer> onDrawClicked;
     private Consumer<Integer> playCardClick;
-    private Consumer<Integer> HandDownClicked;
-    private Consumer<Integer> inPauseClicked;
-    private Consumer<Integer> onNextRoundClicked;
+    private Consumer<Boolean> HandDown;
     private Settings settings;
 
     /**
@@ -36,7 +35,7 @@ public class BoardPanel {
      */
     public BoardPanel(ArrayList<ArrayList<Integer>> hands, ArrayList<String> names, int bin, ArrayList<Integer> Deck, int indexMainPlayer, ArrayList<Integer> listHandPoint, ArrayList<Integer> gamePoints) {
         // Initialize main game window (board)
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setTitle("Lama Game - Board");
         frame.setSize(1000, 800); // Set board size
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,16 +64,15 @@ public class BoardPanel {
             }
         });
 
-        gamefield.handDownClicked((Integer value) -> {
-            if (HandDownClicked != null) {
-                HandDownClicked.accept(value);
+        frontPlayer.playCardClick((indexCard) -> {
+            if (playCardClick != null) {
+                playCardClick.accept(indexCard);
             }
         });
 
-        frontPlayer.playCardClick((indexCard) -> {
-            System.out.println("Board Panel " + indexCard);
-            if (playCardClick != null) {
-                playCardClick.accept(indexCard);
+        frontPlayer.setHandDownClicked((bool) -> {
+            if (HandDown != null) {
+                HandDown.accept(bool);
             }
         });
 
@@ -85,8 +83,6 @@ public class BoardPanel {
         frame.add(overlay);
 
         overlay.setPauseClicked((value) -> {
-            System.out.println("v " + value);
-
             switch (value) {
                 case 1:
                     overlay.setVisible(false);
@@ -96,17 +92,13 @@ public class BoardPanel {
                     settings.setVisible(false);
                     break;
 
-                case 2:/*
-                    if (size != null) {
-                        frame.setSize(size, size);
-                    }*/
+                case 2:
                     overlay.setVisible(false);
                     frontPlayer.setVisible(false);
                     gamefield.setVisible(false);
                     infoPanel.setVisible(false);
                     settings.setVisible(true);
                     settings.settingsValidated((w, h) -> {
-                        System.out.println(w + " " + h);
                         frame.setSize(w, h);
                         overlay.setVisible(true);
                         settings.setVisible(false);
@@ -114,24 +106,12 @@ public class BoardPanel {
                         frame.repaint();
                     });
                     break;
-
-                case 3:
-                    if (inPauseClicked != null) {
-                        inPauseClicked.accept(value);
-                    }
-                    break;
             }
         });
 
         overlay.setNextRoundClicked((value) -> {
-            System.out.println("v "+ value);
-            if (onNextRoundClicked != null) {
-                if (value == 1) {
-                    overlay.setVisible(false);
-                }
-                else {
-                    onNextRoundClicked.accept(value);
-                }
+            if (value == 1) {
+                overlay.setVisible(false);
             }
         });
 
@@ -148,7 +128,6 @@ public class BoardPanel {
                 int w = frame.getWidth();
                 int h = frame.getHeight();
 
-                overlay.setBounds(0, 0, w, h);
                 infoPanel.setBounds(0, 0, (int) (w * 0.9), (int) (h * 0.3));
                 settingsButton.setBounds(w - 100, 0, 50, 50);
                 gamefield.setBounds(0, (int) (h * 0.3), w, (int) (h * 0.3));
@@ -178,7 +157,6 @@ public class BoardPanel {
         settingsButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Settings clicked");
                 overlay.flipMode(false); // pause menu
                 overlay.setVisible(true);
             }
@@ -208,17 +186,8 @@ public class BoardPanel {
      *
      * @param listener The listener to handle the hand down request.
      */
-    public void setOnHandDownRequested(Consumer<Integer> listener) {
-        this.HandDownClicked = listener;
-    }
-
-    /**
-     * Sets the callback for when the pause action is clicked.
-     *
-     * @param listener The listener to handle the pause action.
-     */
-    public void setOnPauseClicked(Consumer<Integer> listener) {
-        this.inPauseClicked = listener;
+    public void setOnHandDownRequested(Consumer<Boolean> listener) {
+        this.HandDown = listener;
     }
 
     /**
@@ -316,10 +285,11 @@ public class BoardPanel {
     /**
      * Clears the visibility of all components on the board.
      */
-    public void clear() {
+    public void dispose() {
         frontPlayer.setVisible(false);
         gamefield.setVisible(false);
         infoPanel.setVisible(false);
         settingsButton.setVisible(false);
+        frame.dispose();
     }
 }

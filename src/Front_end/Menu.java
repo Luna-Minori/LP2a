@@ -86,7 +86,6 @@ public class Menu {
         // Settings action
         settingsButton.addActionListener(e -> {
             settings.settingsValidated((w, h) -> {
-                System.out.println(w + " " + h);
                 width = w;
                 height = h;
                 frame.setSize(width, height);

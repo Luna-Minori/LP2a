@@ -49,13 +49,9 @@ public class HandPanel extends JPanel {
         int x = (int) (index * getWidth() * 0.1);
         int endX = x + 100; // End x position to check if the card exceeds panel width
 
-        // Print debug statements for x and width calculation
-        System.out.println("x: " + x + " endX: " + endX + " width: " + getWidth());
-
         // Adjust card position if it exceeds the panel's width
         if (endX >= getWidth()) {
             x = (int) (((double) (index % getWidth()) / x) * getWidth() * 0.1);
-            System.out.println("col 2");
 
             // Different positions depending on whether it's the main player
             if (mainPlayer) {
@@ -66,7 +62,6 @@ public class HandPanel extends JPanel {
 
         // If card fits within the panel width, position it in the first column
         if (mainPlayer) {
-            System.out.println("col 1");
             return new Rectangle(x, (int) (getHeight() * 0.25), 1, 200);
         }
 

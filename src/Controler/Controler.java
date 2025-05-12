@@ -69,30 +69,32 @@ public class Controler {
         // Main game loop
         while (board.stateOfGame() && !end) {
             while (board.stateOfRound() && !end) {
-                if (!currentPlayer.getHuman()) {
-                    try {
-                        if (noHuman) {
-                            Thread.sleep(100);
-                            updateFront(true);
-                        } else {
-                            Thread.sleep(1000 + new Random().nextInt(3000));
+                if(!currentPlayer.getHandDown()) {
+                    if (!currentPlayer.getHuman()) {
+                        try {
+                            if (noHuman) {
+                                Thread.sleep(100);
+                                updateFront(true);
+                            } else {
+                                Thread.sleep(1000 + new Random().nextInt(3000));
+                            }
+                            iaTurn();
+                        } catch (InterruptedException e) {
+                            JOptionPane.showMessageDialog(null, e.getMessage());
                         }
-                        iaTurn();
-                    } catch (InterruptedException e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage());
+                    } else {
+                        if (notFirstTurn) {
+                            pB.updateInfoPanel(createHandsFront(board), createNamesFront(board), currentPlayerIndex, createOfPoint(board));
+                        }
+                        if (ManyHuman && notFirstTurn) {
+                            ArrayList<Integer> hand = createHandFront(currentPlayer);
+                            String name = currentPlayer.getName();
+                            int point = currentPlayer.getHandValue();
+                            pB.updateFrontPlayer(hand, name, point);
+                        }
+                        notFirstTurn = true;
+                        playerTurn();
                     }
-                } else {
-                    if (notFirstTurn) {
-                        pB.updateInfoPanel(createHandsFront(board), createNamesFront(board), currentPlayerIndex, createOfPoint(board));
-                    }
-                    if (ManyHuman && notFirstTurn) {
-                        ArrayList<Integer> hand = createHandFront(currentPlayer);
-                        String name = currentPlayer.getName();
-                        int point = currentPlayer.getHandValue();
-                        pB.updateFrontPlayer(hand, name, point);
-                    }
-                    notFirstTurn = true;
-                    playerTurn();
                 }
 
                 currentPlayerIndex = (currentPlayerIndex + 1) % board.getPlayers().size();

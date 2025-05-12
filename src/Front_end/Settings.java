@@ -21,7 +21,7 @@ public class Settings extends JPanel {
 		int[][] resolutions = new int[][] {
 				{600, 600},
 				{800, 800},
-				{1000, 1000},
+				{1920, 1080},
 		};
 
 		// To string
