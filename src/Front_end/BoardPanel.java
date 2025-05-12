@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class BoardPanel {
-    private final PlayerPanel frontPlayer; // Panel representing the player's part
+    private PlayerPanel frontPlayer = null; // Panel representing the player's part
     private final GameField gamefield;
     private final Overlay overlay;
     private final InfoPanel infoPanel;
@@ -20,6 +20,7 @@ public class BoardPanel {
     private Consumer<Integer> HandDownClicked;
     private Consumer<Integer> inPauseClicked;
     private Consumer<Integer> onNextRoundClicked;
+    private Settings settings;
 
     /**
      * Constructor for the BoardPanel class.
@@ -46,28 +47,12 @@ public class BoardPanel {
         BackgroundPanel background = new BackgroundPanel(bgImage);
         background.setLayout(null);
 
-        frame.setContentPane(background);
-        overlay = new Overlay(true, frame.getWidth(), frame.getHeight(), names, gamePoints);
-        overlay.setVisible(false); // Initially hidden
-        overlay.setLayout(null); // Needed for absolute positioning
-        overlay.setBounds(0, 0, frame.getWidth(), frame.getHeight());
-        frame.add(overlay);
+        settings = new Settings(); // 1 seule fois
+        settings.setBounds(50, 50, 300, 300); // Position/taille adaptées à ton layout
+        settings.setVisible(false);
+        background.add(settings);
 
-        overlay.setPauseClicked((value) -> {
-            if (inPauseClicked != null) {
-                inPauseClicked.accept(value);
-            }
-        });
-        overlay.setNextRoundClicked((value) -> {
-            if (onNextRoundClicked != null) {
-                if (value == 1) {
-                    overlay.setVisible(false);
-                }
-                else {
-                    onNextRoundClicked.accept(value);
-                }
-            }
-        });
+        frame.setContentPane(background);
 
         frontPlayer = new PlayerPanel(hands.get(indexMainPlayer), names.get(indexMainPlayer), listHandPoint.get(indexMainPlayer));
         infoPanel = new InfoPanel(hands, names, indexMainPlayer, gamePoints);
@@ -93,6 +78,63 @@ public class BoardPanel {
             }
         });
 
+        overlay = new Overlay(true, frame.getWidth(), frame.getHeight(), names, gamePoints);
+        overlay.setVisible(false); // Initially hidden
+        overlay.setLayout(null); // Needed for absolute positioning
+        overlay.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+        frame.add(overlay);
+
+        overlay.setPauseClicked((value) -> {
+            System.out.println("v " + value);
+
+            switch (value) {
+                case 1:
+                    overlay.setVisible(false);
+                    frontPlayer.setVisible(true);
+                    gamefield.setVisible(true);
+                    infoPanel.setVisible(true);
+                    settings.setVisible(false);
+                    break;
+
+                case 2:/*
+                    if (size != null) {
+                        frame.setSize(size, size);
+                    }*/
+                    overlay.setVisible(false);
+                    frontPlayer.setVisible(false);
+                    gamefield.setVisible(false);
+                    infoPanel.setVisible(false);
+                    settings.setVisible(true);
+                    settings.settingsValidated((w, h) -> {
+                        System.out.println(w + " " + h);
+                        frame.setSize(w, h);
+                        overlay.setVisible(true);
+                        settings.setVisible(false);
+                        frame.revalidate();
+                        frame.repaint();
+                    });
+                    break;
+
+                case 3:
+                    if (inPauseClicked != null) {
+                        inPauseClicked.accept(value);
+                    }
+                    break;
+            }
+        });
+
+        overlay.setNextRoundClicked((value) -> {
+            System.out.println("v "+ value);
+            if (onNextRoundClicked != null) {
+                if (value == 1) {
+                    overlay.setVisible(false);
+                }
+                else {
+                    onNextRoundClicked.accept(value);
+                }
+            }
+        });
+
         // Add panels to the frame
         frame.add(settingsButton);
         frame.add(infoPanel);
@@ -106,6 +148,7 @@ public class BoardPanel {
                 int w = frame.getWidth();
                 int h = frame.getHeight();
 
+                overlay.setBounds(0, 0, w, h);
                 infoPanel.setBounds(0, 0, (int) (w * 0.9), (int) (h * 0.3));
                 settingsButton.setBounds(w - 100, 0, 50, 50);
                 gamefield.setBounds(0, (int) (h * 0.3), w, (int) (h * 0.3));

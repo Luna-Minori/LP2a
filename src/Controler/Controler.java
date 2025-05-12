@@ -62,24 +62,6 @@ public class Controler {
         pB = new BoardPanel(createHandsFront(board), createNamesFront(board), board.getBin().getValue(), createDeckFront(board), 0, createListHandPoint(board), createOfPoint(board));
 
         boolean notFirstTurn = false;
-        /*
-        pB.setOnPauseClicked((value) -> {
-            if (value == 2) {
-                //Settings settings = new Settings();
-            }
-            if (value == 3) {
-                // Quit game and return to menu
-                SwingUtilities.invokeLater(() -> {
-                    JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(pB);
-                    if (topFrame != null) {
-                        topFrame.dispose();
-                    }
-                    end = true;
-                    restartGame();
-                });
-            }
-        });
-        */
 
         currentPlayerIndex = 0;
         currentPlayer = board.getPlayers().get(currentPlayerIndex);
@@ -126,8 +108,7 @@ public class Controler {
             pB.overlayUpdate(createNamesFront(board), createOfPoint(board));
             pB.showOverlay();
         }
-
-        pB.clear();
+        pB.dispose();
     }
 
     /**

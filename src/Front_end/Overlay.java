@@ -14,24 +14,26 @@ import java.util.function.Consumer;
  * Overlay panel used to display a semi-transparent pause menu or scoreboard over the game.
  */
 public class Overlay extends JPanel {
+
     private Consumer<Integer> onPauseClicked;
     private Consumer<Integer> onNextRoundClicked;
-    private TextPanel title;
-    private TextPanel setting;
-    private TextPanel leave;
-    private TextPanel game;
-    private TextPanel scoreButton;
-    private ScoreBoard scorePanel;
+    private TextPanel titlePanel;
+    private TextPanel settingsPanel;
+    private TextPanel quitPanel;
+    private TextPanel playPanel;
+    private TextPanel nextRoundButton;
+    private ScoreBoard scoreBoardPanel;
 
     /**
-     * Constructs the overlay with score or pause content.
-     * @param showScore whether to show the scoreboard (true) or the pause menu (false)
-     * @param parentWidth width of the parent component
-     * @param parentHeight height of the parent component
-     * @param names player names
-     * @param scores corresponding scores
+     * Constructs an overlay panel with optional scoreboard display.
+     *
+     * @param showScore   true to show the scoreboard, false to show the pause menu
+     * @param parentWidth width of the parent container
+     * @param parentHeight height of the parent container
+     * @param playerNames list of player names
+     * @param playerScores corresponding player scores
      */
-    public Overlay(boolean showScore, int parentWidth, int parentHeight, ArrayList<String> names, ArrayList<Integer> scores) {
+    public Overlay(boolean showScore, int parentWidth, int parentHeight, ArrayList<String> playerNames, ArrayList<Integer> playerScores) {
         setOpaque(false);
         setBackground(new Color(0, 0, 0, 200));
         setBounds(0, 0, parentWidth, parentHeight);
@@ -42,8 +44,15 @@ public class Overlay extends JPanel {
         flipMode(showScore);
     }
 
-    public Overlay(boolean score, int parentWidth, int parentHeight) {
-        this(score, parentWidth, parentHeight, null, null);
+    /**
+     * Constructs an overlay with only scoreboard or pause menu based on showScore.
+     *
+     * @param showScore   true to show the scoreboard, false to show the pause menu
+     * @param parentWidth width of the parent container
+     * @param parentHeight height of the parent container
+     */
+    public Overlay(boolean showScore, int parentWidth, int parentHeight) {
+        this(showScore, parentWidth, parentHeight, null, null);
     }
 
     @Override
@@ -53,44 +62,52 @@ public class Overlay extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
+    /**
+     * Makes the overlay visible.
+     *
+     * @param rootPane the main game panel
+     */
     public void showOverlay(BoardPanel rootPane) {
         setVisible(true);
     }
 
+    /**
+     * Hides the overlay from view.
+     */
     public void hideOverlay() {
         setVisible(false);
     }
 
     /**
-     * Switches the overlay display mode between pause menu and scoreboard.
+     * Switches the overlay content to show either scoreboard or pause menu.
      *
-     * @param showScore true to display the scoreboard, false to display the pause menu
+     * @param showScore true to display the scoreboard, false to show the pause menu
      */
     protected void flipMode(boolean showScore) {
-        removeAll(); // Remove all existing components
+        removeAll();
 
         if (showScore) {
-            // Create a new scoreboard with empty data or reuse stored data if available
-            scorePanel = new ScoreBoard(new ArrayList<>(), new ArrayList<>());
-            scorePanel.setBounds(getWidth() / 4, getHeight() / 4, 500, 300);
+            scoreBoardPanel = new ScoreBoard(new ArrayList<>(), new ArrayList<>());
+            scoreBoardPanel.setBounds(getWidth() / 4, getHeight() / 4, 500, 300);
             setScoreButton();
             adjustScoreButtonPosition();
-            add(scorePanel);
+            add(scoreBoardPanel);
         } else {
-            // Create the pause menu
             createPauseMenu();
             adjustPauseMenuPosition();
         }
 
-        revalidate(); // Refresh layout
-        repaint();    // Repaint panel
+        revalidate();
+        repaint();
     }
 
-
+    /**
+     * Creates and configures the "Next round" button.
+     */
     private void setScoreButton() {
-        scoreButton = new TextPanel("Next round");
-        scoreButton.setFont(new Font("Uncial Antiqua", Font.BOLD, 30));
-        scoreButton.setForeground(Color.WHITE);
+        nextRoundButton = new TextPanel("Next round");
+        nextRoundButton.setFont(new Font("Uncial Antiqua", Font.BOLD, 30));
+        nextRoundButton.setForeground(Color.WHITE);
 
         MouseAdapter hoverEffect = new MouseAdapter() {
             @Override
@@ -119,27 +136,30 @@ public class Overlay extends JPanel {
             }
         };
 
-        add(scoreButton);
-        scoreButton.addMouseListener(hoverEffect);
+        add(nextRoundButton);
+        nextRoundButton.addMouseListener(hoverEffect);
     }
 
+    /**
+     * Creates and configures the pause menu with "Play", "Setting", and "Quit" options.
+     */
     private void createPauseMenu() {
-        title = new TextPanel("Pause");
-        title.setFont(new Font("MedievalSharp", Font.BOLD, 35));
-        title.setForeground(Color.WHITE);
+        titlePanel = new TextPanel("Pause");
+        titlePanel.setFont(new Font("MedievalSharp", Font.BOLD, 35));
+        titlePanel.setForeground(Color.WHITE);
 
-        game = new TextPanel("Play");
-        setting = new TextPanel("Setting");
-        leave = new TextPanel("Quit");
+        playPanel = new TextPanel("Play");
+        settingsPanel = new TextPanel("Setting");
+        quitPanel = new TextPanel("Quit");
 
         Font optionFont = new Font("Uncial Antiqua", Font.BOLD, 30);
-        game.setFont(optionFont);
-        setting.setFont(optionFont);
-        leave.setFont(optionFont);
+        playPanel.setFont(optionFont);
+        settingsPanel.setFont(optionFont);
+        quitPanel.setFont(optionFont);
 
-        game.setForeground(Color.WHITE);
-        setting.setForeground(Color.WHITE);
-        leave.setForeground(Color.WHITE);
+        playPanel.setForeground(Color.WHITE);
+        settingsPanel.setForeground(Color.WHITE);
+        quitPanel.setForeground(Color.WHITE);
 
         MouseAdapter hoverEffect = new MouseAdapter() {
             @Override
@@ -163,50 +183,70 @@ public class Overlay extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getSource() == leave) {
+                if (e.getSource() == quitPanel) {
                     click(3);
-                } else if (e.getSource() == game) {
+                } else if (e.getSource() == playPanel) {
                     click(1);
-                } else if (e.getSource() == setting) {
+                } else if (e.getSource() == settingsPanel) {
                     click(2);
                 }
             }
         };
 
-        add(title);
-        add(game);
-        add(setting);
-        add(leave);
+        add(titlePanel);
+        add(playPanel);
+        add(settingsPanel);
+        add(quitPanel);
 
-        game.addMouseListener(hoverEffect);
-        setting.addMouseListener(hoverEffect);
-        leave.addMouseListener(hoverEffect);
+        playPanel.addMouseListener(hoverEffect);
+        settingsPanel.addMouseListener(hoverEffect);
+        quitPanel.addMouseListener(hoverEffect);
     }
 
+    /**
+     * Adjusts the positioning of the pause menu components on screen.
+     */
     private void adjustPauseMenuPosition() {
         int y = getHeight() / 4;
         int height = (int) (getHeight() * 0.1);
         int spacing = 20;
 
-        int titleWidth = title.getText().length() * 20;
-        int settingWidth = setting.getText().length() * 20;
-        int leaveWidth = leave.getText().length() * 20;
-        int gameWidth = game.getText().length() * 20;
+        int titleWidth = titlePanel.getText().length() * 20;
+        int settingWidth = settingsPanel.getText().length() * 20;
+        int quitWidth = quitPanel.getText().length() * 20;
+        int playWidth = playPanel.getText().length() * 20;
 
         int centerX = getWidth() / 2;
 
-        title.setBounds(centerX - titleWidth / 2, y, titleWidth, height);
-        game.setBounds(centerX - gameWidth / 2, y + height + spacing, gameWidth, height);
-        setting.setBounds(centerX - settingWidth / 2, y + 2 * (height + spacing), settingWidth, height);
-        leave.setBounds(centerX - leaveWidth / 2, y + 3 * (height + spacing), leaveWidth, height);
+        titlePanel.setBounds(centerX - titleWidth / 2, y, titleWidth, height);
+        playPanel.setBounds(centerX - playWidth / 2, y + height + spacing, playWidth, height);
+        settingsPanel.setBounds(centerX - settingWidth / 2, y + 2 * (height + spacing), settingWidth, height);
+        quitPanel.setBounds(centerX - quitWidth / 2, y + 3 * (height + spacing), quitWidth, height);
     }
 
+    /**
+     * Adjusts the positioning of the "Next round" button.
+     */
     private void adjustScoreButtonPosition() {
-        int width = scoreButton.getText().length() * 20;
-        int y = (int) (scorePanel.getHeight() * 1.1);
-        scoreButton.setBounds(getWidth() / 2 - width / 2, y, width, (int) (getHeight() * 0.2));
+        if (nextRoundButton == null || scoreBoardPanel == null) return;
+
+        int width = nextRoundButton.getText().length() * 20;
+        int y = (int) (scoreBoardPanel.getHeight() * 1.1);
+        nextRoundButton.setBounds(getWidth() / 2 - width / 2, y, width, (int) (getHeight() * 0.2));
     }
 
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        adjustPauseMenuPosition();
+        adjustScoreButtonPosition();
+    }
+
+    /**
+     * Handles a click event and dispatches the value to the appropriate listener.
+     *
+     * @param value the action code (1=Play, 2=Setting, 3=Quit, 4=Next round)
+     */
     private void click(int value) {
         if (value == 4 && onNextRoundClicked != null) {
             onNextRoundClicked.accept(value);
@@ -216,24 +256,31 @@ public class Overlay extends JPanel {
     }
 
     /**
-     * Registers a listener for pause menu options (1=Play, 2=Setting, 3=Quit).
+     * Sets the listener for pause menu actions (Play, Setting, Quit).
+     *
+     * @param listener a consumer handling the action codes (1–3)
      */
     public void setPauseClicked(Consumer<Integer> listener) {
         this.onPauseClicked = listener;
     }
 
     /**
-     * Registers a listener for the "Next round" button.
+     * Sets the listener for the "Next round" button.
+     *
+     * @param listener a consumer handling the action code 4
      */
     public void setNextRoundClicked(Consumer<Integer> listener) {
         this.onNextRoundClicked = listener;
     }
 
     /**
-     * Updates the scoreboard with new names and scores.
+     * Updates the scoreboard with new player names and scores.
+     *
+     * @param names  the list of player names
+     * @param scores the list of corresponding scores
      */
     protected void update(ArrayList<String> names, ArrayList<Integer> scores) {
-        scorePanel.update(names, scores);
-        scorePanel.repaint();
+        scoreBoardPanel.update(names, scores);
+        scoreBoardPanel.repaint();
     }
 }

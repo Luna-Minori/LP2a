@@ -16,7 +16,12 @@ import java.util.function.BiConsumer;
 public class Menu {
 
     private InitGame initGame;
+    private Settings settings;
+    private BackgroundPanel background;
+    private int width;
+    private int height;
     private BiConsumer<ArrayList<String>, Integer> initGameEndCallback;
+    private BiConsumer<ArrayList<String>, Integer> settingsCallback;
 
     /**
      * Constructor that builds and displays the main menu.
@@ -25,14 +30,20 @@ public class Menu {
         JFrame frame = new JFrame("Lama Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Main Menu");
-        frame.setSize(500, 500);
+        frame.setSize(600, 600);
 
         // Load background image
-        ImageIcon bgIcon = new ImageIcon("C:/Users/Luna/eclipse-workspace/Lp2a_Project/src/Front_end/Back.png");
+        ImageIcon bgIcon = new ImageIcon("./src/Front_end/Back.png");
         Image bgImage = bgIcon.getImage();
-        BackgroundPanel background = new BackgroundPanel(bgImage);
+        background = new BackgroundPanel(bgImage);
         background.setLayout(null);
         frame.setContentPane(background);
+
+        // Settings
+        settings = new Settings(); // 1 seule fois
+        settings.setBounds(50, 50, 300, 300); // Position/taille adaptées à ton layout
+        settings.setVisible(false);
+        background.add(settings);
 
         // Menu panel (semi-transparent)
         JPanel menuPanel = new JPanel();
@@ -74,8 +85,24 @@ public class Menu {
 
         // Settings action
         settingsButton.addActionListener(e -> {
-            new Settings(); // Opens settings
+            settings.settingsValidated((w, h) -> {
+                System.out.println(w + " " + h);
+                width = w;
+                height = h;
+                frame.setSize(width, height);
+                // Ici, tu peux retourner au menu si tu veux
+                menuPanel.setVisible(true);
+                settings.setVisible(false);
+                frame.revalidate();
+                frame.repaint();
+            });
+            menuPanel.setVisible(false);
+            settings.setVisible(true);
+            frame.revalidate();
+            frame.repaint();
         });
+
+
 
         // Hover effect on buttons
         MouseAdapter hoverEffect = new MouseAdapter() {
