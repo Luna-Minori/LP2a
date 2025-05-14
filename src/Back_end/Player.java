@@ -136,11 +136,17 @@ public class Player {
      */
     public int getHandValue() {
         int temp = 0;
-        for (int i = 0; i < hand.size(); i++) {
-            if (getCard(i).getValue() == 7) {
-                temp += 10; // Special case for cards with value 7
-            } else {
-                temp += getCard(i).getValue();
+        ArrayList<Integer> storage = new ArrayList<Integer>();
+        for (Card c : hand) {
+            int value = c.getValue();
+            if (!storage.contains(value)) {
+                if (value == 7) {
+                    temp += 10;
+                }
+                else {
+                    temp += value;
+                }
+                storage.add(value);
             }
         }
         return temp;
@@ -171,10 +177,10 @@ public class Player {
         for (Card c : hand) {
             int value = c.getValue();
             if (!storage.contains(value)) {
-                if (value != 7) {
-                    addPoint(value);
-                } else {
+                if (value == 7) {
                     addPoint(10);
+                } else {
+                    addPoint(value);
                 }
                 storage.add(value);
             }
