@@ -178,7 +178,7 @@ public class Controler {
             }
         }
 
-        if (!cardValue.isEmpty()) {
+        if (!cardValue.isEmpty() && !board.getDeck() .isEmpty()){
             try {
                 board.cardPlayble(cardIndex.get(bestCard(cardValue)), currentPlayerIndex);
                 pB.updateBin(board.getBin().getValue());

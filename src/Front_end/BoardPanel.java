@@ -291,5 +291,6 @@ public class BoardPanel {
         infoPanel.setVisible(false);
         settingsButton.setVisible(false);
         frame.dispose();
+        System.exit(0);
     }
 }
