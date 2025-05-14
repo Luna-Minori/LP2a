@@ -167,21 +167,20 @@ public class Player {
      * Cards with a value of 7 are worth 10 points, others are worth their value.
      */
     protected void countPoints() {
-        int[] storage = new int[7]; // To store values already encountered in the hand
-        int i = 0;
+        ArrayList<Integer> storage = new ArrayList<>();
         for (Card c : hand) {
-            if (!contains(storage, c.getValue())) { // Only count each value once
-                System.out.println("Storage: " + storage[i] + " Value: " + c.getValue());
-                if (c.getValue() != 7) {
-                    addPoint(c.getValue());
+            int value = c.getValue();
+            if (!storage.contains(value)) {
+                if (value != 7) {
+                    addPoint(value);
                 } else {
-                    addPoint(10); // Special handling for value 7
+                    addPoint(10);
                 }
-                storage[i] = c.getValue();
-                i++;
+                storage.add(value);
             }
         }
     }
+
 
     /**
      * Updates the player's total points for the game by adding the points from the current round,

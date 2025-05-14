@@ -64,7 +64,7 @@ public class PlayerPanel extends JPanel {
 
     private void adjustTextPanelSize() {
         namePanel.setBounds((int) (getWidth() * 0.05), (int) (getHeight() * 0.7), namePanel.getText().length() * 30, (int) (getHeight() * 0.2));
-        pointTextPanel.setBounds((int) (getWidth() * 0.05), (int) (getHeight() * 0.5), pointTextPanel.getText().length() * 30, (int) (getHeight() * 0.2));
+        pointTextPanel.setBounds((int) (getWidth() * 0.05), (int) (getHeight() * 0.5), pointTextPanel.getText().length() * 15, (int) (getHeight() * 0.2));
     }
 
     private void createHandPanel() {
@@ -101,9 +101,22 @@ public class PlayerPanel extends JPanel {
     // Méthode pour ajuster la taille du HandPanel pour qu'il occupe un pourcentage de Front_Player
     private void adjustHandPanelSize() {
         float coefHeightHand = 0.8f; // hand of player use x % of the Panel front player
+        int marge = (int) (getWidth() * 0.05);
 
+        int xnamePanel = namePanel.getWidth() + marge;
+        int xpointTextPanel = pointTextPanel.getWidth() + marge;
+
+        int x;
+        if(xnamePanel > xpointTextPanel) {
+            x = (int) (xnamePanel *1.05);
+        } else {
+            x = (int) (xpointTextPanel*1.05);
+        }
+        int y = (int) Math.ceil(getHeight() - getHeight() * coefHeightHand - getHeight() * 0.15);
+        int w = (int) Math.ceil((getWidth() - namePanel.getWidth() * 1.05) * 0.95);
+        int h = (int) Math.ceil(getHeight() * coefHeightHand);
         // Ajuster la taille et la position du HandPanel
-        handPanel.setBounds((int) Math.ceil(namePanel.getWidth() * 1.05), (int) Math.ceil(getHeight() - getHeight() * coefHeightHand - getHeight() * 0.15), (int) Math.ceil((getWidth() - namePanel.getWidth() * 1.05) * 0.95), (int) Math.ceil(getHeight() * coefHeightHand));
+        handPanel.setBounds(x, y, w, h);
     }
 
     // Méthode pour redimensionner le Front_Player et ajuster le HandPanel
